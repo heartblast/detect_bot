@@ -21,9 +21,9 @@ func ParseNginxDump(b []byte) []root.RootEntry {
 	sc.Buffer(buf, 10*1024*1024)
 
 	// 정규식 패턴들
-	reRoot := regexp.MustCompile(`(?i)^\s*root\s+([^;#]+);`)           // root /path/to/root;
-	reAlias := regexp.MustCompile(`(?i)^\s*alias\s+([^;#]+);`)         // alias /path/to/alias;
-	reServerName := regexp.MustCompile(`(?i)^\s*server_name\s+([^;#]+);`) // server_name example.com;
+	reRoot := regexp.MustCompile(`(?i)^\s*root\s+([^;#]+);`)                            // root /path/to/root;
+	reAlias := regexp.MustCompile(`(?i)^\s*alias\s+([^;#]+);`)                          // alias /path/to/alias;
+	reServerName := regexp.MustCompile(`(?i)^\s*server_name\s+([^;#]+);`)               // server_name example.com;
 	reConfFileLine := regexp.MustCompile(`(?i)^#\s*configuration\s+file\s+(.+?):(\d+)`) // # configuration file /etc/nginx/nginx.conf:12
 
 	var lastServerName, lastFileLine string // 문맥 정보 저장
@@ -44,16 +44,16 @@ func ParseNginxDump(b []byte) []root.RootEntry {
 		// root 디렉토리 추출
 		if m := reRoot.FindStringSubmatch(line); len(m) == 2 {
 			out = append(out, root.RootEntry{
-				Path:        strings.TrimSpace(m[1]), // root 경로
-				Source:      root.SourceNginxRoot,   // 소스: Nginx root
+				Path:        strings.TrimSpace(m[1]),                               // root 경로
+				Source:      root.SourceNginxRoot,                                  // 소스: Nginx root
 				ContextHint: joinHint(lastFileLine, "server_name="+lastServerName), // 문맥 정보
 			})
 		}
 		// alias 디렉토리 추출
 		if m := reAlias.FindStringSubmatch(line); len(m) == 2 {
 			out = append(out, root.RootEntry{
-				Path:        strings.TrimSpace(m[1]), // alias 경로
-				Source:      root.SourceNginxAlias,  // 소스: Nginx alias
+				Path:        strings.TrimSpace(m[1]),                               // alias 경로
+				Source:      root.SourceNginxAlias,                                 // 소스: Nginx alias
 				ContextHint: joinHint(lastFileLine, "server_name="+lastServerName), // 문맥 정보
 			})
 		}

@@ -15,8 +15,8 @@ func (r *LargeFileRule) Name() string { return "large_file" }
 func (r *LargeFileRule) Evaluate(ctx model.FileCtx) []Reason {
 	if r.ThresholdBytes > 0 && ctx.Size >= r.ThresholdBytes {
 		return []Reason{{
-			Code:     "large_file_in_web_path", // 대용량 파일 검출
-			Severity: SevHigh,                 // 높은 중요도
+			Code:     "large_file_in_web_path",                                      // 대용량 파일 검출
+			Severity: SevHigh,                                                       // 높은 중요도
 			Message:  "Large file found under web-serving path (staging heuristic)", // 단어
 		}}
 	}

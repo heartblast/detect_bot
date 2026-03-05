@@ -6,10 +6,10 @@ import "dmz_webroot_scanner/internal/model"
 type Severity int
 
 const (
-	SevLow Severity = iota // 0: 낮음
-	SevMedium               // 1: 중간
-	SevHigh                 // 2: 높음
-	SevCritical             // 3: 매우 높음
+	SevLow      Severity = iota // 0: 낮음
+	SevMedium                   // 1: 중간
+	SevHigh                     // 2: 높음
+	SevCritical                 // 3: 매우 높음
 )
 
 // String: Severity 값을 문자열로 변환
@@ -36,6 +36,6 @@ type Reason struct {
 // Rule: 파일 메타데이터를 검사하는 인터페이스
 // 모든 규칙은 이 인터페이스를 기반으로 작성됨
 type Rule interface {
-	Name() string                      // 규칙 이름 반환
+	Name() string                        // 규칙 이름 반환
 	Evaluate(ctx model.FileCtx) []Reason // 파일 정보를 나눈 결과 목록 (비어있을 수 있음)
 }

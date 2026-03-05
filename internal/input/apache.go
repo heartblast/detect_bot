@@ -21,8 +21,8 @@ func ParseApacheDump(b []byte) []root.RootEntry {
 	for _, m := range reDR.FindAllStringSubmatch(s, -1) {
 		if len(m) == 2 {
 			out = append(out, root.RootEntry{
-				Path:        strings.TrimSpace(m[1]), // 추출된 경로를 정소정소
-				Source:      root.SourceApacheDR,     // 소스: Apache DocumentRoot
+				Path:        strings.TrimSpace(m[1]),  // 추출된 경로를 정소정소
+				Source:      root.SourceApacheDR,      // 소스: Apache DocumentRoot
 				ContextHint: "from apachectl -S dump", // 참고 정보
 			})
 		}

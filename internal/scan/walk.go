@@ -12,8 +12,8 @@ import (
 )
 
 type walkItem struct {
-	Path string        // 파일의 절대경로
-	Info fs.FileInfo   // 파일의 메타정보 (크기, 권한, 수정시간 등)
+	Path string         // 파일의 절대경로
+	Info fs.FileInfo    // 파일의 메타정보 (크기, 권한, 수정시간 등)
 	Root root.RootEntry // 어느 웹루트에서 발견된 파일인지
 }
 

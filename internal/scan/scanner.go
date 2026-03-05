@@ -30,12 +30,12 @@ type Scanner struct {
 func (s *Scanner) ScanRoots(roots []root.RootEntry) ([]report.Finding, int) {
 	var scanned int64
 
-	findCh := make(chan report.Finding, 256)     // 발견된 의심 파일들을 전달하는 채널
-	pathCh := make(chan walkItem, 1024)          // 탐색된 파일들을 전달하는 채널
+	findCh := make(chan report.Finding, 256) // 발견된 의심 파일들을 전달하는 채널
+	pathCh := make(chan walkItem, 1024)      // 탐색된 파일들을 전달하는 채널
 
-	workers := s.Cfg.Workers  // 동시 처리 워커 스레드 수
+	workers := s.Cfg.Workers // 동시 처리 워커 스레드 수
 	if workers <= 0 {
-		workers = 1  // 최소 1개
+		workers = 1 // 최소 1개
 	}
 
 	var wg sync.WaitGroup
@@ -73,7 +73,7 @@ func (s *Scanner) ScanRoots(roots []root.RootEntry) ([]report.Finding, int) {
 					RootSource:           string(ctx.RootSource),
 				}
 
-			// 선택 사항: SHA256 해시 계산 (max-size-mb 옵션으로 제한)
+				// 선택 사항: SHA256 해시 계산 (max-size-mb 옵션으로 제한)
 				if s.Cfg.ComputeHash && ctx.Size <= s.Cfg.MaxSizeMB*1024*1024 {
 					if h, err := sha256FileBounded(ctx.Path, s.Cfg.MaxSizeMB*1024*1024); err == nil {
 						f.SHA256 = h

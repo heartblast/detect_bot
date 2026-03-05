@@ -24,9 +24,9 @@ func main() {
 
 	// rep: 최종 보고서 구조체. 리포트 메타데이터 초기화
 	rep := report.Report{
-		ReportVersion: "1.0", // 리포트 포맷 버전
+		ReportVersion: "1.0",                           // 리포트 포맷 버전
 		GeneratedAt:   time.Now().Format(time.RFC3339), // 리포트 생성 시각
-		Inputs:        []string{}, // 입력 소스 목록 (nginx/apache 설정파일 경로)
+		Inputs:        []string{},                      // 입력 소스 목록 (nginx/apache 설정파일 경로)
 	}
 
 	// host: 스캔을 수행하는 호스트명
@@ -40,7 +40,7 @@ func main() {
 	// Nginx 설정 파일 처리: 'nginx -T' 출력으로부터 root/alias 디렉토리 추출
 	if cfg.NginxDump != "" {
 		rep.Inputs = append(rep.Inputs, "nginx-dump:"+cfg.NginxDump) // 입력 소스 기록
-		b, err := input.ReadAllMaybeStdin(cfg.NginxDump) // 파일 또는 stdin에서 읽기
+		b, err := input.ReadAllMaybeStdin(cfg.NginxDump)             // 파일 또는 stdin에서 읽기
 		must(err, "read nginx dump")
 		roots = append(roots, input.ParseNginxDump(b)...) // 정규식으로 root/alias 디렉토리 파싱
 	}
@@ -48,7 +48,7 @@ func main() {
 	// Apache 설정 파일 처리: 'apachectl -S' 출력으로부터 DocumentRoot 디렉토리 추출
 	if cfg.ApacheDump != "" {
 		rep.Inputs = append(rep.Inputs, "apache-dump:"+cfg.ApacheDump) // 입력 소스 기록
-		b, err := input.ReadAllMaybeStdin(cfg.ApacheDump) // 파일 또는 stdin에서 읽기
+		b, err := input.ReadAllMaybeStdin(cfg.ApacheDump)              // 파일 또는 stdin에서 읽기
 		must(err, "read apache dump")
 		roots = append(roots, input.ParseApacheDump(b)...) // 정규식으로 DocumentRoot 디렉토리 파싱
 	}
@@ -63,7 +63,7 @@ func main() {
 
 	// roots 정규화: 중복 제거, symlink 해석, 경로 정리
 	roots = root.NormalizeRoots(roots)
-	rep.Roots = roots // 리포트에 수집된 웹루트 기록
+	rep.Roots = roots                 // 리포트에 수집된 웹루트 기록
 	rep.Stats.RootsCount = len(roots) // 통계: 수집된 루트 개수
 
 	// [2단계] 선택적 스캔 실행 (scan 플래그가 활성화된 경우에만)
@@ -81,7 +81,7 @@ func main() {
 			// 1. 허용 목록 규칙: MIME 타입 및 확장자 검증
 			&rules.AllowlistRule{
 				AllowMimePrefixes: lowerSlice(cfg.AllowMimePref), // 허용된 MIME 타입 프리픽스
-				AllowExt:          allowExt, // 허용된 파일 확장자
+				AllowExt:          allowExt,                      // 허용된 파일 확장자
 			},
 			// 2. 위험한 확장자 규칙: 실행 가능/압축 파일 확인
 			&rules.HighRiskExtRule{HighRisk: defaultHighRiskExt()},
@@ -93,14 +93,14 @@ func main() {
 
 		// sc: 스캐너 인스턴스 생성 및 스캔 실행
 		sc := scan.Scanner{
-			Cfg:   cfg, // 스캔 설정 (깊이, 제외 경로, 워커 수 등)
+			Cfg:   cfg,     // 스캔 설정 (깊이, 제외 경로, 워커 수 등)
 			Rules: ruleSet, // 적용할 규칙 세트
 		}
 
 		// findings: 의심 파일 목록, scanned: 검사한 총 파일 수
 		findings, scanned := sc.ScanRoots(roots)
-		rep.Findings = findings // 리포트에 발견 결과 저장
-		rep.Stats.ScannedFiles = scanned // 통계: 검사된 파일 수
+		rep.Findings = findings                 // 리포트에 발견 결과 저장
+		rep.Stats.ScannedFiles = scanned        // 통계: 검사된 파일 수
 		rep.Stats.FindingsCount = len(findings) // 통계: 의심 파일 수
 	}
 

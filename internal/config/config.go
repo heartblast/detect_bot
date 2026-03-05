@@ -25,28 +25,28 @@ func (m *MultiFlag) Set(s string) error {
 // Config: 프로그램 실행에 필요한 모든 설정값을 담는 구조체
 type Config struct {
 	// 입력 소스
-	NginxDump     string     // Nginx -T 명령 출력 파일 경로 (또는 '-'로 stdin 사용)
-	ApacheDump    string     // apachectl -S 명령 출력 파일 경로
-	
+	NginxDump  string // Nginx -T 명령 출력 파일 경로 (또는 '-'로 stdin 사용)
+	ApacheDump string // apachectl -S 명령 출력 파일 경로
+
 	// 스캔 옵션
-	Scan          bool       // 실제 파일 시스템 스캔 실행 여부
-	Output        string     // 출력 JSON 리포트 파일 경로 (또는 '-'로 stdout 사용)
-	MaxDepth      int        // 디렉토리 재귀 최대 깊이
-	MaxSizeMB     int64      // MIME 탐지/해시 계산 시 읽을 파일 최대 크기 (MB)
-	NewerThanH    int        // 마지막 N시간 내 수정된 파일만 플래그 (0=비활성화)
-	
+	Scan       bool   // 실제 파일 시스템 스캔 실행 여부
+	Output     string // 출력 JSON 리포트 파일 경로 (또는 '-'로 stdout 사용)
+	MaxDepth   int    // 디렉토리 재귀 최대 깊이
+	MaxSizeMB  int64  // MIME 탐지/해시 계산 시 읽을 파일 최대 크기 (MB)
+	NewerThanH int    // 마지막 N시간 내 수정된 파일만 플래그 (0=비활성화)
+
 	// 필터 및 화이트리스트
-	Exclude       MultiFlag  // 제외할 경로 접두사 (반복 가능) 예: -exclude /tmp -exclude /proc
-	AllowMimePref MultiFlag  // 허용된 MIME 타입 프리픽스 (반복 가능)
-	AllowExt      MultiFlag  // 허용된 파일 확장자 (반복 가능)
-	WatchDirs     MultiFlag  // 수동으로 추가할 감시 디렉토리 (반복 가능)
-	
+	Exclude       MultiFlag // 제외할 경로 접두사 (반복 가능) 예: -exclude /tmp -exclude /proc
+	AllowMimePref MultiFlag // 허용된 MIME 타입 프리픽스 (반복 가능)
+	AllowExt      MultiFlag // 허용된 파일 확장자 (반복 가능)
+	WatchDirs     MultiFlag // 수동으로 추가할 감시 디렉토리 (반복 가능)
+
 	// 추가 기능
-	ComputeHash   bool       // 발견된 파일의 SHA256 해시 계산 여부
-	FollowSymlink bool       // 심볼릭 링크 따라가기 여부 (권장하지 않음)
-	
+	ComputeHash   bool // 발견된 파일의 SHA256 해시 계산 여부
+	FollowSymlink bool // 심볼릭 링크 따라가기 여부 (권장하지 않음)
+
 	// 성능 최적화
-	Workers       int        // 파일 스캔 워커 스레드 수 (기본값 4)
+	Workers int // 파일 스캔 워커 스레드 수 (기본값 4)
 }
 
 // MustParseFlags: 명령줄 플래그를 파싱하여 Config 구조체로 변환

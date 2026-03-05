@@ -8,7 +8,7 @@ import (
 
 // AllowlistRule: 파일의 MIME 타입과 확장자가 허용 목록에 있는지 검사
 type AllowlistRule struct {
-	AllowMimePrefixes []string       // 허용된 MIME 타입 프리픽스 목록 (예: text/, image/)
+	AllowMimePrefixes []string        // 허용된 MIME 타입 프리픽스 목록 (예: text/, image/)
 	AllowExt          map[string]bool // 허용된 파일 확장자 맵 (검색 성능 O(1))
 }
 
@@ -24,8 +24,8 @@ func (r *AllowlistRule) Evaluate(ctx model.FileCtx) []Reason {
 	// MIME 타입이 허용 목록에 있는지 검사
 	if !mimeAllowed(ctx.Mime, r.AllowMimePrefixes) {
 		out = append(out, Reason{
-			Code:     "mime_not_in_allowlist", // 오류 코드
-			Severity: SevHigh,                 // 높은 중요도
+			Code:     "mime_not_in_allowlist",                   // 오류 코드
+			Severity: SevHigh,                                   // 높은 중요도
 			Message:  "MIME is not allowed by prefix allowlist", // 오류 설명
 		})
 	}
@@ -33,8 +33,8 @@ func (r *AllowlistRule) Evaluate(ctx model.FileCtx) []Reason {
 	// 파일 확장자가 허용 목록에 있는지 검사
 	if ctx.Ext != "" && !r.AllowExt[ctx.Ext] {
 		out = append(out, Reason{
-			Code:     "ext_not_in_allowlist",  // 오류 코드
-			Severity: SevHigh,                 // 높은 중요도
+			Code:     "ext_not_in_allowlist",                  // 오류 코드
+			Severity: SevHigh,                                 // 높은 중요도
 			Message:  "Extension is not allowed by allowlist", // 오류 설명
 		})
 	}

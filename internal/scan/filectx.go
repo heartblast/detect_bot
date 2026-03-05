@@ -14,9 +14,9 @@ type FileCtx struct {
 	RootPath   string          // 스캔되는 단원의 웹루트 경로
 	RootSource root.RootSource // 웹루트 소스 (예: nginx.root, apache.documentroot)
 
-	Size    int64         // 파일 크기 (바이트)
-	ModTime time.Time     // 파일 마지막 수정 시간
-	Perm    string        // 파일 권한 (예: -rw-r--r--)
-	Ext     string        // 파일 확장자 (를: .html, .php)
-	Mime    string        // MIME 타입 (스니프된값, 예: text/html)
+	Size    int64     // 파일 크기 (바이트)
+	ModTime time.Time // 파일 마지막 수정 시간
+	Perm    string    // 파일 권한 (예: -rw-r--r--)
+	Ext     string    // 파일 확장자 (를: .html, .php)
+	Mime    string    // MIME 타입 (스니프된값, 예: text/html)
 }

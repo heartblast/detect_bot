@@ -45,7 +45,7 @@ func isImageExt(ext string) bool {
 	// 반환: 이미지 확장자면 true, 아니면 false
 	switch strings.ToLower(ext) {
 	case ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico":
-		return true  // 이미지 확장자
+		return true // 이미지 확장자
 	default:
 		return false // 다른 파일 형태
 	}

@@ -13,9 +13,9 @@ type FileCtx struct {
 	RootPath   string          // 스캔되는 단원의 웹루트 경로
 	RootSource root.RootSource // 웹루트 소스
 
-	Size    int64         // 파일 크기 (바이트)
-	ModTime time.Time     // 파일 마지막 수정 시간
-	Perm    string        // 파일 권한
-	Ext     string        // 파일 확장자
-	Mime    string        // MIME 타입
+	Size    int64     // 파일 크기 (바이트)
+	ModTime time.Time // 파일 마지막 수정 시간
+	Perm    string    // 파일 권한
+	Ext     string    // 파일 확장자
+	Mime    string    // MIME 타입
 }
