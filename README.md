@@ -159,12 +159,31 @@ nginx -T 2>&1 | ./dmz_webroot_scanner \
 ## 파일 구조(개발자용)
 
 * `cmd/dmz_webroot_scanner/main.go` : 엔트리포인트(조립)
-* `internal/input/*` : nginx/apache 덤프 파싱
-* `internal/root/*` : 루트 정규화/중복 제거
-* `internal/scan/*` : 워커풀 스캔 엔진 + walk/sniff
-* `internal/rules/*` : 룰 인터페이스 + 내장 룰
-* `internal/report/*` : JSON 스키마 + writer
-* `internal/model/*` : 공용 타입(FileCtx) (import cycle 방지)
+* `internal/config/config.go` : CLI 옵션 파싱 및 설정 구조
+* `internal/input/` : nginx/apache 덤프 파싱
+  * `nginx.go` : Nginx 설정 파싱
+  * `apache.go` : Apache 설정 파싱
+  * `reader.go` : 덤프 입력 처리
+* `internal/root/` : 루트 정규화/중복 제거
+  * `types.go` : RootEntry 타입 정의
+  * `normalize.go` : 루트 경로 정규화 로직
+* `internal/scan/` : 워커풀 스캔 엔진 + 파일 순회
+  * `scanner.go` : 메인 스캔 엔진 및 워커풀
+  * `sniff.go` : MIME 타입 감지
+  * `walk_unix.go` : Unix/Linux 파일 순회(platform build tag)
+  * `walk_windows.go` : Windows 파일 순회(platform build tag)
+  * `walk_common.go` : 공용 함수(walkItem, depth)
+  * `filectx.go` : 파일 컨텍스트 관리
+* `internal/rules/` : 탐지 룰 인터페이스 및 내장 룰
+  * `rule.go` : Rule 인터페이스 정의
+  * `builtin_allowlist.go` : Allowlist 룰
+  * `builtin_highrisk.go` : 고위험 확장자 룰
+  * `builtin_largefile.go` : 대용량 파일 룰
+  * `builtin_mismatch.go` : 확장자-MIME 불일치 룰
+* `internal/report/` : JSON 리포트 생성 및 출력
+  * `model.go` : Report/Finding 스키마
+  * `writer.go` : JSON 쓰기 및 포맷팅
+* `internal/model/` : 공용 타입(FileCtx) (import cycle 방지)
 
 ---
 

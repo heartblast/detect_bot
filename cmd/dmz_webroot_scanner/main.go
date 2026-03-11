@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -19,6 +20,15 @@ import (
 // 2단계: 설정된 규칙 세트로 웹루트 내 파일 스캔
 // 3단계: 발견된 위험한 파일들을 JSON 리포트로 출력
 func main() {
+	// 커스텀 help 메시지 설정
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "NICE INFORMATION SERVICE\n")
+		fmt.Fprintf(os.Stderr, "DMZ Webroot Scanner\n\n")
+		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Options:\n")
+		flag.PrintDefaults()
+	}
+
 	// cfg: 커맨드라인 플래그에서 파싱한 설정값 (경로, 스캔옵션, 필터 등)
 	cfg := config.MustParseFlags()
 
