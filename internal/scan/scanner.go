@@ -30,23 +30,22 @@ type Scanner struct {
 func (s *Scanner) ScanRoots(roots []root.RootEntry) ([]report.Finding, int) {
 	var scanned int64
 
-	findCh := make(chan report.Finding, 256) // 발견된 의심 파일들을 전달하는 채널
-	pathCh := make(chan walkItem, 1024)      // 탐색된 파일들을 전달하는 채널
+	findCh := make(chan report.Finding, 256)
+	pathCh := make(chan walkItem, 1024)
 
-	workers := s.Cfg.Workers // 동시 처리 워커 스레드 수
+	workers := s.Cfg.Workers
 	if workers <= 0 {
-		workers = 1 // 최소 1개
+		workers = 1
 	}
 
 	var wg sync.WaitGroup
 	wg.Add(workers)
 
-	// 병렬 처리 워커: 각 워커는 pathCh에서 파일을 받아 검사
 	for i := 0; i < workers; i++ {
 		go func() {
 			defer wg.Done()
 			for it := range pathCh {
-				atomic.AddInt64(&scanned, 1) // 검사한 파일 수 증가 (동시성 안전)
+				atomic.AddInt64(&scanned, 1)
 
 				ctx, ok := s.buildFileCtx(it)
 				if !ok {
@@ -71,12 +70,25 @@ func (s *Scanner) ScanRoots(roots []root.RootEntry) ([]report.Finding, int) {
 					URLExposureHeuristic: "potentially_web_reachable",
 					RootMatched:          ctx.RootPath,
 					RootSource:           string(ctx.RootSource),
+					MatchedPatterns:      []string{},
+					EvidenceMasked:       []string{},
+					ContentFlags:         "",
 				}
 
-				// 선택 사항: SHA256 해시 계산 (max-size-mb 옵션으로 제한)
-				if s.Cfg.ComputeHash && ctx.Size <= s.Cfg.MaxSizeMB*1024*1024 {
-					if h, err := sha256FileBounded(ctx.Path, s.Cfg.MaxSizeMB*1024*1024); err == nil {
-						f.SHA256 = h
+				if ctx.ContentSample != "" && ctx.ContentTruncated {
+					f.ContentFlags = "truncated"
+				}
+
+				for _, r := range reasons {
+					if strings.HasPrefix(r.Code, "connection_") ||
+						strings.HasPrefix(r.Code, "credential_") ||
+						strings.HasPrefix(r.Code, "private_key_") ||
+						strings.HasPrefix(r.Code, "combo_") ||
+						strings.HasPrefix(r.Code, "internal_") {
+						f.MatchedPatterns = append(f.MatchedPatterns, r.Code)
+						if r.Message != "" {
+							f.EvidenceMasked = append(f.EvidenceMasked, r.Message)
+						}
 					}
 				}
 
@@ -85,7 +97,6 @@ func (s *Scanner) ScanRoots(roots []root.RootEntry) ([]report.Finding, int) {
 		}()
 	}
 
-	// Producer: 루트 디렉토리들을 순회하며 파일을 채널로 전송
 	go func() {
 		defer close(pathCh)
 		for _, r := range roots {
@@ -93,19 +104,16 @@ func (s *Scanner) ScanRoots(roots []root.RootEntry) ([]report.Finding, int) {
 		}
 	}()
 
-	// Closer: 모든 워커가 완료될 때까지 대기 후 결과 채널 종료
 	go func() {
 		wg.Wait()
 		close(findCh)
 	}()
 
-	// 결과 수집: 모든 의심 파일들을 배열에 모음
 	findings := make([]report.Finding, 0, 128)
 	for f := range findCh {
 		findings = append(findings, f)
 	}
 
-	// 정렬: 이유 많은 항목 먼저, 같으면 크기 큰 순, 마지막으로 경로명 알파벳순
 	sort.Slice(findings, func(i, j int) bool {
 		if len(findings[i].Reasons) != len(findings[j].Reasons) {
 			return len(findings[i].Reasons) > len(findings[j].Reasons)
@@ -189,16 +197,38 @@ func (s *Scanner) buildFileCtx(it walkItem) (model.FileCtx, bool) {
 		}
 	}
 
+	// 콘텐츠 샘플 읽기 (선택적): 텍스트성 파일에서 민감정보 패턴 탐지용
+	contentSample := ""
+	contentSampleBytes := 0
+	contentTruncated := false
+	if s.Cfg.ContentScan {
+		extMap := make(map[string]bool)
+		for _, e := range s.Cfg.ContentExts {
+			extMap[strings.ToLower(strings.TrimSpace(e))] = true
+		}
+		if isTextLikeExt(ext, extMap) && info.Size() > 0 && info.Size() <= s.Cfg.ContentMaxSizeKB*1024 {
+			sample, readBytes, truncated, err := readContentSample(path, s.Cfg.ContentMaxBytes)
+			if err == nil {
+				contentSample = sample
+				contentSampleBytes = readBytes
+				contentTruncated = truncated
+			}
+		}
+	}
+
 	return model.FileCtx{
-		Path:       path,
-		RealPath:   real,
-		RootPath:   it.Root.Path,
-		RootSource: it.Root.Source,
-		Size:       info.Size(),
-		ModTime:    info.ModTime(),
-		Perm:       perm,
-		Ext:        ext,
-		Mime:       mime,
+		Path:               path,
+		RealPath:           real,
+		RootPath:           it.Root.Path,
+		RootSource:         it.Root.Source,
+		Size:               info.Size(),
+		ModTime:            info.ModTime(),
+		Perm:               perm,
+		Ext:                ext,
+		Mime:               mime,
+		ContentSample:      contentSample,
+		ContentSampleBytes: contentSampleBytes,
+		ContentTruncated:   contentTruncated,
 	}, true
 }
 
@@ -237,4 +267,93 @@ func sha256FileBounded(path string, maxBytes int64) (string, error) {
 		}
 	}
 	return hex.EncodeToString(h.Sum(nil)), nil
+}
+
+// isTextLikeExt: 파일 확장자가 텍스트성(텍스트 기반 설정 파일 등)인지 판단
+// ext: 소문자 확장자 (예: ".yaml", ".json")
+// contentExts: 콘텐츠 스캔 대상 확장자 맵
+// 반환: 텍스트성 파일이면 true
+func isTextLikeExt(ext string, contentExts map[string]bool) bool {
+	if len(contentExts) == 0 {
+		// 기본값이 있으면 여기서도 기본값 사용
+		defaults := map[string]bool{
+			".yaml": true, ".yml": true, ".json": true, ".xml": true,
+			".properties": true, ".conf": true, ".env": true, ".ini": true,
+			".txt": true, ".config": true, ".cfg": true, ".toml": true,
+		}
+		return defaults[ext]
+	}
+	return contentExts[ext]
+}
+
+// readContentSample: 파일에서 텍스트 샘플을 읽음 (최대 바이트 제한)
+// path: 파일 경로
+// maxBytes: 읽을 최대 바이트 수
+// 반환: 샘플 문자열, 실제 읽은 바이트 수, 파일이 잘렸는지 여부, 에러
+func readContentSample(path string, maxBytes int) (string, int, bool, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", 0, false, err
+	}
+	defer f.Close()
+
+	buf := make([]byte, maxBytes)
+	n, err := f.Read(buf)
+	if err != nil && err != io.EOF {
+		return "", n, false, err
+	}
+
+	// 파일이 maxBytes보다 큰지 확인
+	truncated := false
+	var fileSize int64
+	if fi, err := f.Stat(); err == nil {
+		fileSize = fi.Size()
+		truncated = fileSize > int64(maxBytes)
+	}
+
+	// 바이트 배열을 문자열로 변환 (유효한 UTF-8만 포함)
+	// 바이너리 데이터는 제외하기 위해 간단한 검증
+	sample := string(buf[:n])
+
+	// 제어 문자나 널 바이트가 많으면 바이너리로 간주 (스킵)
+	if isBinaryContent(buf[:n]) {
+		return "", n, truncated, nil
+	}
+
+	return sample, n, truncated, nil
+}
+
+// isBinaryContent: 바이트 배열이 바이너리(텍스트가 아닌) 데이터로 보이는지 판단
+func isBinaryContent(buf []byte) bool {
+	if len(buf) == 0 {
+		return false
+	}
+
+	// 처음 512 바이트 중 널 바이트가 1개 이상이면 바이너리로 간주
+	nullCount := 0
+	for _, b := range buf {
+		if b == 0 {
+			nullCount++
+		}
+	}
+
+	// 널 바이트가 1% 이상이면 바이너리
+	if nullCount > len(buf)/100 {
+		return true
+	}
+
+	// 제어 문자 비율 확인
+	controlCount := 0
+	for _, b := range buf {
+		if b < 32 && b != '\t' && b != '\n' && b != '\r' {
+			controlCount++
+		}
+	}
+
+	// 제어 문자가 5% 이상이면 바이너리
+	if controlCount > len(buf)/20 {
+		return true
+	}
+
+	return false
 }

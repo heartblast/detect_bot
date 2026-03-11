@@ -47,6 +47,12 @@ type Config struct {
 
 	// 성능 최적화
 	Workers int // 파일 스캔 워커 스레드 수 (기본값 4)
+
+	// 민감정보 콘텐츠 스캔 옵션
+	ContentScan      bool      // 파일 본문에서 민감정보 패턴 탐지 활성화
+	ContentMaxBytes  int       // 콘텐츠 샘플 최대 읽기 바이트 수
+	ContentMaxSizeKB int64     // 콘텐츠 스캔 대상 파일 최대 크기 (KB)
+	ContentExts      MultiFlag // 콘텐츠 스캔 대상 확장자 (yaml, json, env, conf 등)
 }
 
 // MustParseFlags: 명령줄 플래그를 파싱하여 Config 구조체로 변환
@@ -67,6 +73,10 @@ func MustParseFlags() Config {
 	flag.BoolVar(&cfg.ComputeHash, "hash", false, "compute SHA256 for findings")
 	flag.BoolVar(&cfg.FollowSymlink, "follow-symlink", false, "follow symlinks (not recommended)")
 	flag.IntVar(&cfg.Workers, "workers", 4, "number of scan workers (default 4)")
+	flag.BoolVar(&cfg.ContentScan, "content-scan", false, "scan file content for sensitive information patterns")
+	flag.IntVar(&cfg.ContentMaxBytes, "content-max-bytes", 65536, "max bytes to read per file for content scan (default 65536)")
+	flag.Int64Var(&cfg.ContentMaxSizeKB, "content-max-size-kb", 1024, "max file size (KB) to scan for sensitive patterns (default 1024)")
+	flag.Var(&cfg.ContentExts, "content-ext", "target extensions for content scan (repeatable, e.g. .yaml .json .env)")
 	flag.Parse()
 
 	// Defaults (기존 코드와 동일)
@@ -82,6 +92,14 @@ func MustParseFlags() Config {
 			".html", ".htm", ".css", ".js", ".mjs", ".json", ".xml", ".txt",
 			".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico",
 			".woff", ".woff2", ".ttf", ".otf", ".eot",
+		}
+	}
+
+	// 콘텐츠 스캔 대상 확장자 기본값
+	if len(cfg.ContentExts) == 0 {
+		cfg.ContentExts = []string{
+			".yaml", ".yml", ".json", ".xml", ".properties", ".conf",
+			".env", ".ini", ".txt", ".config", ".cfg", ".toml",
 		}
 	}
 

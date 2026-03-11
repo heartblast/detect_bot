@@ -17,6 +17,11 @@ type Finding struct {
 	RootMatched          string   `json:"root_matched,omitempty"`           // 매칭된 웹루트 경로
 	RootSource           string   `json:"root_source,omitempty"`            // 웹루트 소스
 	Severity             string   `json:"severity,omitempty"`               // 오류 중요도
+
+	// 민감정보 패턴 탐지 결과 (선택적)
+	MatchedPatterns []string `json:"matched_patterns,omitempty"` // 탐지된 패턴 종류 목록
+	EvidenceMasked  []string `json:"evidence_masked,omitempty"`  // 마스킹된 증거 (운영자 이해용)
+	ContentFlags    string   `json:"content_flags,omitempty"`    // 콘텐츠 분석 플래그 (e.g. "truncated")
 }
 
 // Report: 전체 스캔 결과를 메타데이터와 단일들로 저장하는 최상위 구조체

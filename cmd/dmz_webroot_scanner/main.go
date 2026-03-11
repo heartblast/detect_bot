@@ -101,6 +101,20 @@ func main() {
 			&rules.ExtMimeMismatchRule{},
 		}
 
+		// 콘텐츠 스캔 옵션 활성화 시 SecretPatternsRule 추가 (운영 영향 최소)
+		if cfg.ContentScan {
+			re := &rules.SecretPatternsRule{
+				EnablePatterns: cfg.ContentScan,
+				MaxSampleSize:  cfg.ContentMaxBytes,
+				ContentExts:    make(map[string]bool),
+			}
+			// 확장자 맵 설정
+			for _, e := range cfg.ContentExts {
+				re.ContentExts[strings.ToLower(strings.TrimSpace(e))] = true
+			}
+			ruleSet = append(ruleSet, re)
+		}
+
 		// sc: 스캐너 인스턴스 생성 및 스캔 실행
 		sc := scan.Scanner{
 			Cfg:   cfg,     // 스캔 설정 (깊이, 제외 경로, 워커 수 등)
