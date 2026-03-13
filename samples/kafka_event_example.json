@@ -1,0 +1,17 @@
+{
+  "host": "web01.example.com",
+  "generated_at": "2026-03-12T10:15:30Z",
+  "roots_count": 3,
+  "findings": [
+    {
+      "path": "/var/www/html/config.php",
+      "severity": "high",
+      "reasons": ["high_risk_extension"]
+    },
+    {
+      "path": "/var/www/html/.env",
+      "severity": "critical",
+      "reasons": ["secret_patterns"]
+    }
+  ]
+}

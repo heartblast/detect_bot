@@ -1,6 +1,6 @@
 package rules
 
-import "dmz_webroot_scanner/internal/model"
+import "github.com/heartblast/dmz_webroot_scanner/internal/model"
 
 // Severity: 검출된 의심 파일의 오류 중요도 레벨
 type Severity int

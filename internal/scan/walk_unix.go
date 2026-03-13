@@ -9,8 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	"dmz_webroot_scanner/internal/config"
-	"dmz_webroot_scanner/internal/root"
+	"github.com/heartblast/dmz_webroot_scanner/internal/config"
+	"github.com/heartblast/dmz_webroot_scanner/internal/root"
 )
 
 // walkRoot: 한 웹루트 디렉토리 아래의 모든 파일을 재귀적으로 탐색

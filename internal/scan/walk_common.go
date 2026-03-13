@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"dmz_webroot_scanner/internal/root"
+	"github.com/heartblast/dmz_webroot_scanner/internal/root"
 )
 
 type walkItem struct {

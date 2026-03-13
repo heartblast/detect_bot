@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"dmz_webroot_scanner/internal/config"
-	"dmz_webroot_scanner/internal/input"
-	"dmz_webroot_scanner/internal/report"
-	"dmz_webroot_scanner/internal/root"
-	"dmz_webroot_scanner/internal/rules"
-	"dmz_webroot_scanner/internal/scan"
+	"github.com/heartblast/dmz_webroot_scanner/internal/config"
+	"github.com/heartblast/dmz_webroot_scanner/internal/input"
+	"github.com/heartblast/dmz_webroot_scanner/internal/report"
+	"github.com/heartblast/dmz_webroot_scanner/internal/root"
+	"github.com/heartblast/dmz_webroot_scanner/internal/rules"
+	"github.com/heartblast/dmz_webroot_scanner/internal/scan"
 )
 
 // printFlagGroup: 플래그들을 그룹 이름과 함께 출력

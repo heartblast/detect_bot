@@ -1,6 +1,6 @@
 package rules
 
-import "dmz_webroot_scanner/internal/model"
+import "github.com/heartblast/dmz_webroot_scanner/internal/model"
 
 // HighRiskExtRule: 실행 가능한 또는 압축 파일 확장자를 검사
 // 예: .zip, .exe, .php, .jsp 등

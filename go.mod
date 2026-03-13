@@ -1,4 +1,4 @@
-module dmz_webroot_scanner
+module github.com/heartblast/dmz_webroot_scanner
 
 go 1.24.0
 

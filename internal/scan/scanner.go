@@ -12,11 +12,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"dmz_webroot_scanner/internal/config"
-	"dmz_webroot_scanner/internal/model"
-	"dmz_webroot_scanner/internal/report"
-	"dmz_webroot_scanner/internal/root"
-	"dmz_webroot_scanner/internal/rules"
+	"github.com/heartblast/dmz_webroot_scanner/internal/config"
+	"github.com/heartblast/dmz_webroot_scanner/internal/model"
+	"github.com/heartblast/dmz_webroot_scanner/internal/report"
+	"github.com/heartblast/dmz_webroot_scanner/internal/root"
+	"github.com/heartblast/dmz_webroot_scanner/internal/rules"
 )
 
 type Scanner struct {
