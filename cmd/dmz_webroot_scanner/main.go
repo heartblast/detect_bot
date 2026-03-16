@@ -221,6 +221,27 @@ func makeRuleSet(cfg config.Config) []rules.Rule {
 		rulesList = append(rulesList, re)
 	}
 
+	// PII 스캔 함수
+	if cfg.PIIScan {
+		piiRule := &rules.PIIPatternsRule{
+			EnablePatterns:     cfg.PIIScan,
+			MaxSampleSize:      cfg.PIIMaxBytes,
+			ContentExts:        make(map[string]bool),
+			MaxMatches:         cfg.PIIMaxMatches,
+			MaskSensitive:      cfg.PIIMask,
+			StoreSample:        cfg.PIIStoreSample,
+			UseContextKeywords: cfg.PIIContextKeywords,
+		}
+		for _, e := range cfg.PIIExts {
+			e = strings.ToLower(strings.TrimSpace(e))
+			if !strings.HasPrefix(e, ".") {
+				e = "." + e
+			}
+			piiRule.ContentExts[e] = true
+		}
+		rulesList = append(rulesList, piiRule)
+	}
+
 	// enable/disable filtering
 	if len(cfg.EnableRules) > 0 || len(cfg.DisableRules) > 0 {
 		enabled := map[string]bool{}

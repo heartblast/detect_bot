@@ -1,0 +1,134 @@
+{
+  "report_version": "1.0",
+  "generated_at": "2026-03-16T15:09:43+09:00",
+  "host": "PC-1250024I01",
+  "inputs": [],
+  "config": {
+    "NginxDump": "",
+    "ApacheDump": "",
+    "ServerType": "",
+    "Scan": true,
+    "Output": "test.json",
+    "MaxDepth": 12,
+    "MaxSizeMB": 100,
+    "NewerThanH": 0,
+    "Preset": "",
+    "ConfigFile": "",
+    "Exclude": null,
+    "AllowMimePref": [
+      "text/html",
+      "text/css",
+      "application/javascript",
+      "text/javascript",
+      "application/json",
+      "image/",
+      "font/",
+      "application/font-",
+      "application/xml",
+      "text/plain"
+    ],
+    "AllowExt": [
+      ".yaml"
+    ],
+    "WatchDirs": [
+      "test_pii.yaml"
+    ],
+    "ComputeHash": false,
+    "FollowSymlink": false,
+    "EnableRules": null,
+    "DisableRules": null,
+    "rules": {
+      "enable": null,
+      "disable": null
+    },
+    "Kafka": {
+      "Enabled": false,
+      "Brokers": null,
+      "Topic": "",
+      "ClientID": "",
+      "TLSEnabled": false,
+      "SASLEnabled": false,
+      "Username": "",
+      "PasswordEnv": "",
+      "MaskSensitive": false
+    },
+    "Workers": 1,
+    "ContentScan": false,
+    "ContentMaxBytes": 65536,
+    "ContentMaxSizeKB": 1024,
+    "ContentExts": [
+      ".yaml",
+      ".yml",
+      ".json",
+      ".xml",
+      ".properties",
+      ".conf",
+      ".env",
+      ".ini",
+      ".txt",
+      ".config",
+      ".cfg",
+      ".toml"
+    ],
+    "PIIScan": true,
+    "PIIExts": [
+      "yaml"
+    ],
+    "PIIMaxSizeKB": 256,
+    "PIIMaxBytes": 65536,
+    "PIIMaxMatches": 5,
+    "PIIMask": false,
+    "PIIStoreSample": true,
+    "PIIContextKeywords": false
+  },
+  "active_rules": [
+    "allowlist",
+    "high_risk_ext",
+    "large_file",
+    "ext_mime_mismatch",
+    "pii_patterns"
+  ],
+  "roots": [
+    {
+      "path": "test_pii.yaml",
+      "real_path": "test_pii.yaml",
+      "source": "manual"
+    }
+  ],
+  "findings": [
+    {
+      "path": "test_pii.yaml",
+      "real_path": "test_pii.yaml",
+      "size_bytes": 121,
+      "mod_time": "2026-03-16T15:06:30+09:00",
+      "perm": "-rw-rw-rw-",
+      "ext": ".yaml",
+      "mime_sniff": "text/plain; charset=utf-8",
+      "reasons": [
+        "mime_not_in_allowlist",
+        "resident_registration_number",
+        "mobile_phone",
+        "birth_date"
+      ],
+      "url_exposure_heuristic": "potentially_web_reachable",
+      "root_matched": "test_pii.yaml",
+      "root_source": "manual",
+      "severity": "critical",
+      "matched_patterns": [
+        "resident_registration_number",
+        "mobile_phone",
+        "birth_date"
+      ],
+      "evidence_masked": [
+        "901010-1******",
+        "010-123**-****",
+        "1234-5678; 1990-10-09"
+      ]
+    }
+  ],
+  "stats": {
+    "roots_count": 1,
+    "scanned_files": 1,
+    "findings_count": 1
+  }
+}

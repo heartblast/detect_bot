@@ -89,6 +89,19 @@ func (s *Scanner) ScanRoots(roots []root.RootEntry) ([]report.Finding, int) {
 						if r.Message != "" {
 							f.EvidenceMasked = append(f.EvidenceMasked, r.Message)
 						}
+					} else if strings.HasPrefix(r.Code, "resident_registration_number") ||
+						strings.HasPrefix(r.Code, "foreigner_registration_number") ||
+						strings.HasPrefix(r.Code, "passport_number") ||
+						strings.HasPrefix(r.Code, "drivers_license") ||
+						strings.HasPrefix(r.Code, "credit_card") ||
+						strings.HasPrefix(r.Code, "bank_account") ||
+						strings.HasPrefix(r.Code, "mobile_phone") ||
+						strings.HasPrefix(r.Code, "email") ||
+						strings.HasPrefix(r.Code, "birth_date") {
+						f.MatchedPatterns = append(f.MatchedPatterns, r.Code)
+						if r.Message != "" {
+							f.EvidenceMasked = append(f.EvidenceMasked, r.Message)
+						}
 					}
 				}
 
@@ -201,17 +214,30 @@ func (s *Scanner) buildFileCtx(it walkItem) (model.FileCtx, bool) {
 	contentSample := ""
 	contentSampleBytes := 0
 	contentTruncated := false
-	if s.Cfg.ContentScan {
+	if s.Cfg.ContentScan || s.Cfg.PIIScan {
 		extMap := make(map[string]bool)
 		for _, e := range s.Cfg.ContentExts {
 			extMap[strings.ToLower(strings.TrimSpace(e))] = true
 		}
-		if isTextLikeExt(ext, extMap) && info.Size() > 0 && info.Size() <= s.Cfg.ContentMaxSizeKB*1024 {
-			sample, readBytes, truncated, err := readContentSample(path, s.Cfg.ContentMaxBytes)
-			if err == nil {
-				contentSample = sample
-				contentSampleBytes = readBytes
-				contentTruncated = truncated
+		for _, e := range s.Cfg.PIIExts {
+			extMap[strings.ToLower(strings.TrimSpace(e))] = true
+		}
+		if isTextLikeExt(ext, extMap) && info.Size() > 0 {
+			maxSize := s.Cfg.ContentMaxSizeKB * 1024
+			if s.Cfg.PIIMaxSizeKB*1024 > maxSize {
+				maxSize = s.Cfg.PIIMaxSizeKB * 1024
+			}
+			if info.Size() <= int64(maxSize) {
+				maxBytes := s.Cfg.ContentMaxBytes
+				if s.Cfg.PIIMaxBytes > maxBytes {
+					maxBytes = s.Cfg.PIIMaxBytes
+				}
+				sample, readBytes, truncated, err := readContentSample(path, maxBytes)
+				if err == nil {
+					contentSample = sample
+					contentSampleBytes = readBytes
+					contentTruncated = truncated
+				}
 			}
 		}
 	}

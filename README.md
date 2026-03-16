@@ -22,6 +22,12 @@ DMZ 구간 웹서버의 웹서빙 경로(root/alias/DocumentRoot) 를 웹서버 
   - 조합 탐지: 연결정보+비밀번호, S3+access_key+secret_key 등 고위험 조합
   - 민감정보 원문 미저장, 마스킹된 증거만 리포트에 기록
 
+- 개인정보(PII) 탐지(선택적)
+  - 텍스트 파일 본문에서 주민등록번호, 외국인등록번호, 여권번호, 운전면허번호, 카드번호, 계좌번호, 휴대전화번호, 이메일, 생년월일 패턴 탐지
+  - 형식 검증(Luhn 알고리즘, 날짜 유효성 등) 및 문맥 키워드 분석으로 오탐 방지
+  - 신뢰도 기반 판정: validated(검증 통과), suspected(문맥 근거), weak_match(패턴 일치만)
+  - 민감정보 원문 미저장, 마스킹된 샘플만 기록
+
 - 운영 친화 옵션
   - `--newer-than-h`, `--max-depth`, `--exclude`로 운영 영향 최소화
   - `--hash`는 필요 시만(부하 증가 가능)
@@ -120,6 +126,22 @@ nginx -T 2>&1 | ./dmz_webroot_scanner \
   --out /var/log/dmz_webroot_scanner/report-$(date +%F)-content.json
 ```
 
+### 7) PII 탐지 활성화(텍스트 파일에서 개인정보 패턴 탐지)
+
+```bash
+nginx -T 2>&1 | ./dmz_webroot_scanner \
+  --nginx-dump - \
+  --scan \
+  --pii-scan \
+  --pii-max-bytes 65536 \
+  --pii-max-size-kb 256 \
+  --pii-ext .yaml --pii-ext .json --pii-ext .txt --pii-ext .log \
+  --pii-mask \
+  --pii-store-sample \
+  --pii-context-keywords \
+  --out /var/log/dmz_webroot_scanner/report-$(date +%F)-pii.json
+```
+
 ---
 
 ## 추가 기능 소개
@@ -204,6 +226,15 @@ Kafka 전송 실패는 전체 스캔에 영향을 주지 않으며, 로컬 JSON 
 
 이러한 간략화된 이벤트는 SIEM/Flink 등으로 스트리밍되어 추가 분석에 활용할 수 있습니다.
 
+### PII 탐지
+텍스트 기반 파일에서 개인정보 유출위험 패턴을 탐지합니다. 탐지 대상은 주민등록번호, 외국인등록번호, 여권번호, 운전면허번호, 카드번호, 계좌번호, 휴대전화번호, 이메일, 생년월일입니다.
+
+* 검증 로직: 카드번호(Luhn), 이메일 형식, 생년월일 날짜 유효성 등
+* 문맥 보강: "주민", "email", "card" 등 키워드 주변 탐지 시 신뢰도 상향
+* 판정 상태: `validated`(검증 통과), `suspected`(문맥 근거), `weak_match`(패턴 일치만)
+* 마스킹: 주민등록번호 `901010-1******`, 카드번호 `1234-****-****-5678` 등
+* 옵션: `--pii-scan` 활성화, `--pii-ext` 대상 확장자, `--pii-mask` 마스킹, `--pii-context-keywords` 문맥 분석
+
 ---
 
 ## 옵션 요약
@@ -245,6 +276,17 @@ Kafka 전송 실패는 전체 스캔에 영향을 주지 않으며, 로컬 JSON 
   * `--content-max-bytes <n>` : 파일별 콘텐츠 샘플 최대 읽기 바이트(기본 65536)
   * `--content-max-size-kb <n>` : 콘텐츠 스캔 대상 파일 최대 크기(KB, 기본 1024)
   * `--content-ext <.ext>` : 콘텐츠 스캔 대상 확장자 지정(반복, 기본: .yaml .yml .json .xml .properties .conf .env .ini .txt .config .cfg .toml)
+
+* PII 분석(개인정보 탐지)
+
+  * `--pii-scan` : 파일 내용에서 개인정보 패턴 탐지 활성화(기본 false)
+  * `--pii-max-bytes <n>` : 파일별 PII 샘플 최대 읽기 바이트(기본 65536)
+  * `--pii-max-size-kb <n>` : PII 스캔 대상 파일 최대 크기(KB, 기본 256)
+  * `--pii-max-matches <n>` : 규칙별 최대 저장 샘플 수(기본 5)
+  * `--pii-ext <.ext>` : PII 스캔 대상 확장자 지정(반복, 기본: .yaml .yml .json .xml .properties .conf .env .ini .txt .log .csv .tsv)
+  * `--pii-mask` : PII 값 마스킹 적용(기본 false)
+  * `--pii-store-sample` : 마스킹된 샘플 저장(기본 false)
+  * `--pii-context-keywords` : 문맥 키워드 분석 활성화(기본 false)
 
 * 출력
 
@@ -298,6 +340,35 @@ Kafka 전송 실패는 전체 스캔에 영향을 주지 않으며, 로컬 JSON 
 * `internal_endpoint_private_ip` : 사설 IP 대역(10.x, 172.16-31.x, 192.168.x) (medium)
 * `internal_endpoint_domain` : 내부 도메인(.internal, .local, .corp, .intra) (medium)
 
+### PII 기반 개인정보 탐지 (--pii-scan 활성화 시)
+
+**주민등록번호 관련**
+* `resident_registration_number` : 주민등록번호 패턴 (critical, validated/suspected/weak_match)
+
+**외국인등록번호 관련**
+* `foreigner_registration_number` : 외국인등록번호 패턴 (critical, validated/suspected/weak_match)
+
+**여권번호 관련**
+* `passport_number` : 여권번호 패턴 (high, suspected/weak_match)
+
+**운전면허번호 관련**
+* `drivers_license` : 운전면허번호 패턴 (high, suspected/weak_match)
+
+**카드번호 관련**
+* `credit_card` : 신용카드번호 패턴 (critical, validated/suspected/weak_match)
+
+**계좌번호 관련**
+* `bank_account` : 은행계좌번호 패턴 (high, suspected/weak_match)
+
+**휴대전화번호 관련**
+* `mobile_phone` : 휴대전화번호 패턴 (medium, validated/suspected/weak_match)
+
+**이메일 관련**
+* `email` : 이메일 주소 패턴 (medium, validated/suspected/weak_match)
+
+**생년월일 관련**
+* `birth_date` : 생년월일 패턴 (medium, validated/suspected/weak_match)
+
 **위험한 조합 탐지 (높은 우선순위)**
 * `combo_jdbc_with_credentials` : JDBC URL + 비밀번호 (critical)
 * `combo_datasource_with_credentials` : datasource + username + password (critical)
@@ -315,8 +386,8 @@ Kafka 전송 실패는 전체 스캔에 영향을 주지 않으며, 로컬 JSON 
   * `mime_sniff` : 스니프된 MIME 타입
   * `reasons[]` : 탐지 규칙 코드 목록
   * `severity` : 최고 위험도 (critical/high/medium/low)
-  * `matched_patterns[]` : 탐지된 민감정보 패턴 종류 (--content-scan 활성화 시)
-  * `evidence_masked[]` : 마스킹된 증거 (민감정보 원문 제외, 운영자 이해용)
+  * `matched_patterns[]` : 탐지된 민감정보 패턴 종류 (--content-scan 또는 --pii-scan 활성화 시)
+  * `evidence_masked[]` : 마스킹된 증거 (민감정보/PII 원문 제외, 운영자 이해용)
   * `content_flags` : 콘텐츠 분석 플래그 (e.g. "truncated")
   * `sha256` : SHA256 해시값 (--hash 활성화 시)
 * `stats` : 스캔 파일 수, 탐지 건수 등 요약

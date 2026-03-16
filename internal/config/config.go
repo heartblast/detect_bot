@@ -109,6 +109,16 @@ type Config struct {
 	ContentMaxBytes  int       // 콘텐츠 샘플 최대 읽기 바이트 수
 	ContentMaxSizeKB int64     // 콘텐츠 스캔 대상 파일 최대 크기 (KB)
 	ContentExts      MultiFlag // 콘텐츠 스캔 대상 확장자 (yaml, json, env, conf 등)
+
+	// 개인정보(PII) 탐지 옵션
+	PIIScan            bool      // 개인정보 유출위험 패턴 탐지 활성화
+	PIIExts            MultiFlag // PII 탐지 대상 확장자
+	PIIMaxSizeKB       int64     // PII 탐지 대상 파일 최대 크기 (KB)
+	PIIMaxBytes        int       // PII 탐지 시 최대 읽기 바이트 수
+	PIIMaxMatches      int       // 규칙별 최대 저장 샘플 수
+	PIIMask            bool      // 결과값 마스킹 저장
+	PIIStoreSample     bool      // 샘플 저장 여부 제어
+	PIIContextKeywords bool      // 문맥 기반 보강 활성화
 }
 
 // MustParseFlags: 명령줄 플래그를 파싱하여 Config 구조체로 변환
@@ -147,6 +157,14 @@ func MustParseFlags() Config {
 	flag.IntVar(&cfg.ContentMaxBytes, "content-max-bytes", cfg.ContentMaxBytes, "max bytes to read per file for content scan (default 65536)")
 	flag.Int64Var(&cfg.ContentMaxSizeKB, "content-max-size-kb", cfg.ContentMaxSizeKB, "max file size (KB) to scan for sensitive patterns (default 1024)")
 	flag.Var(&cfg.ContentExts, "content-ext", "target extensions for content scan (repeatable, e.g. .yaml .json .env)")
+	flag.BoolVar(&cfg.PIIScan, "pii-scan", cfg.PIIScan, "scan file content for personal information (PII) patterns")
+	flag.Var(&cfg.PIIExts, "pii-ext", "target extensions for PII scan (repeatable, e.g. .yaml .json .env)")
+	flag.Int64Var(&cfg.PIIMaxSizeKB, "pii-max-size-kb", cfg.PIIMaxSizeKB, "max file size (KB) to scan for PII patterns (default 256)")
+	flag.IntVar(&cfg.PIIMaxBytes, "pii-max-bytes", cfg.PIIMaxBytes, "max bytes to read per file for PII scan (default 65536)")
+	flag.IntVar(&cfg.PIIMaxMatches, "pii-max-matches", cfg.PIIMaxMatches, "max number of matches to store per rule (default 5)")
+	flag.BoolVar(&cfg.PIIMask, "pii-mask", cfg.PIIMask, "mask sensitive PII values in results")
+	flag.BoolVar(&cfg.PIIStoreSample, "pii-store-sample", cfg.PIIStoreSample, "store masked PII samples in results")
+	flag.BoolVar(&cfg.PIIContextKeywords, "pii-context-keywords", cfg.PIIContextKeywords, "use context keywords to boost PII detection confidence")
 	flag.Var(&cfg.EnableRules, "enable-rules", "explicitly enable rules (comma-separated or repeatable)")
 	flag.Var(&cfg.DisableRules, "disable-rules", "explicitly disable rules (comma-separated or repeatable)")
 	flag.BoolVar(&cfg.Kafka.Enabled, "kafka-enabled", cfg.Kafka.Enabled, "enable Kafka event sending")
@@ -187,6 +205,18 @@ func MustParseFlags() Config {
 		cfg.ContentMaxSizeKB = 1024
 	}
 
+	if cfg.PIIMaxSizeKB == 0 {
+		cfg.PIIMaxSizeKB = 256
+	}
+
+	if cfg.PIIMaxBytes == 0 {
+		cfg.PIIMaxBytes = 65536
+	}
+
+	if cfg.PIIMaxMatches == 0 {
+		cfg.PIIMaxMatches = 5
+	}
+
 	// 프리셋 적용: CLI 플래그나 설정파일에서 제공되지 않은 값에만 채움
 	if cfg.Preset != "" {
 		applyPreset(&cfg)
@@ -211,6 +241,12 @@ func MustParseFlags() Config {
 		cfg.ContentExts = []string{
 			".yaml", ".yml", ".json", ".xml", ".properties", ".conf",
 			".env", ".ini", ".txt", ".config", ".cfg", ".toml",
+		}
+	}
+	if len(cfg.PIIExts) == 0 {
+		cfg.PIIExts = []string{
+			".yaml", ".yml", ".json", ".xml", ".properties", ".conf",
+			".env", ".ini", ".txt", ".log", ".csv", ".tsv",
 		}
 	}
 
