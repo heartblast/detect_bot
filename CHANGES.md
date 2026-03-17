@@ -1,5 +1,19 @@
 # Changelog - DMZ Webroot Scanner
 
+## [v1.1.2] - 2026-03-17
+
+### 🎯 Release Summary
+Added version display to help message. The `-h` flag now shows the current program version (v1.1.2) for better version identification during operations.
+
+### 📝 Detailed Changes
+
+#### **cmd/dmz_webroot_scanner/main.go** - Version Display Enhancement
+- Added `Version` constant containing current version "v1.1.2"
+- Updated `flag.Usage` function to display version in help output
+- Help message now shows: "Version: v1.1.2"
+
+---
+
 ## [v1.2.0] - 2026-03-12 (10:30 UTC)
 
 ### 🎯 Release Summary

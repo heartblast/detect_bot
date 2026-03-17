@@ -6,11 +6,12 @@ $MAIN_PKG    = "./cmd/dmz_webroot_scanner"
 $DIST_DIR    = "dist"
 
 # 버전 정보
-$VERSION     = "0.1.0"
+$VERSION     = "1.1.2"
 $COMMIT      = (git rev-parse --short HEAD) 2>$null
 if (-not $COMMIT) { $COMMIT = "unknown" }
 
 $BUILD_TIME  = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+$VERSION_SUFFIX = $VERSION.Replace(".", "_")
 
 # ldflags
 $LDFLAGS = "-s -w -X main.version=$VERSION -X main.commit=$COMMIT -X main.buildTime=$BUILD_TIME"
@@ -32,7 +33,7 @@ function Build-Target {
         [string]$EXT = ""
     )
 
-    $outputName = "${APP_NAME}_${GOOS}_${GOARCH}${EXT}"
+    $outputName = "${APP_NAME}_${GOOS}_${GOARCH}_v${VERSION_SUFFIX}${EXT}"
     $outputPath = Join-Path $DIST_DIR $outputName
 
     Write-Host "==> Building $outputName"

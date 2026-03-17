@@ -5,10 +5,11 @@ APP_NAME="dmz_webroot_scanner"
 MAIN_PKG="./cmd/dmz_webroot_scanner"
 DIST_DIR="dist"
 
-VERSION="0.1.0"
+VERSION="1.1.2"
 COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
 BUILD_TIME="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
+VERSION_SUFFIX="${VERSION//./_}"
 LDFLAGS="-s -w -X main.version=${VERSION} -X main.commit=${COMMIT} -X main.buildTime=${BUILD_TIME}"
 
 rm -rf "${DIST_DIR}"
@@ -22,7 +23,7 @@ build_target() {
   local goarch="$2"
   local ext="${3:-}"
 
-  local output_name="${APP_NAME}_${goos}_${goarch}${ext}"
+  local output_name="${APP_NAME}_${goos}_${goarch}_v${VERSION_SUFFIX}${ext}"
   local output_path="${DIST_DIR}/${output_name}"
 
   echo "==> Building ${output_name}"
