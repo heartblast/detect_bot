@@ -26,14 +26,15 @@ type Finding struct {
 
 // Report: 전체 스캔 결과를 메타데이터와 단일들로 저장하는 최상위 구조체
 type Report struct {
-	ReportVersion string           `json:"report_version,omitempty"` // 리포트 버전
-	GeneratedAt   string           `json:"generated_at"`             // 리포트 생성 시간
-	Host          string           `json:"host,omitempty"`           // 스캔 실행 호스트명
-	Inputs        []string         `json:"inputs"`                   // 입력 소스 목록
-	Config        interface{}      `json:"config,omitempty"`         // 적용된 설정값 (CLI/파일/프리셋 합산)
-	ActiveRules   []string         `json:"active_rules,omitempty"`   // 최종 활성화된 룰 이름 목록
-	Roots         []root.RootEntry `json:"roots"`                    // 추출된 웹루트 목록
-	Findings      []Finding        `json:"findings"`                 // 검출된 의심 파일 목록
+	ReportVersion string           `json:"report_version,omitempty"`  // 리포트 버전
+	GeneratedAt   string           `json:"generated_at"`              // 리포트 생성 시간
+	ScanStartedAt string           `json:"scan_started_at,omitempty"` // 스캔 시작 시각 (RFC3339)
+	Host          string           `json:"host,omitempty"`            // 스캔 실행 호스트명
+	Inputs        []string         `json:"inputs"`                    // 입력 소스 목록
+	Config        interface{}      `json:"config,omitempty"`          // 적용된 설정값 (CLI/파일/프리셋 합산)
+	ActiveRules   []string         `json:"active_rules,omitempty"`    // 최종 활성화된 룰 이름 목록
+	Roots         []root.RootEntry `json:"roots"`                     // 추출된 웹루트 목록
+	Findings      []Finding        `json:"findings"`                  // 검출된 의심 파일 목록
 	Stats         struct {         // 스캔 통계
 		RootsCount    int `json:"roots_count"`    // 추출된 웹루트 총 개수
 		ScannedFiles  int `json:"scanned_files"`  // 스캔된 파일 총 개수

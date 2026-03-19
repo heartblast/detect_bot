@@ -1,5 +1,40 @@
 # Changelog - DMZ Webroot Scanner
 
+## [v1.1.3] - 2026-03-19
+
+### 🎯 Release Summary
+- Added `NICE DetectBot` startup banner and version output (stderr)
+- Banner stored as embedded text file (`internal/banner/nice_detectbot.txt`) and included via Go `embed`
+- Added `scan_started_at` to JSON report metadata
+- Streamlit report parser UI now displays scan start time
+- Updated README and changelog documentation
+
+### 📝 Detailed Changes
+
+#### **cmd/dmz_webroot_scanner/main.go** - Startup Banner + Scan Timestamp
+- Prints embedded ASCII banner on startup (stderr) to avoid polluting JSON output
+- Prints program version below the banner (supports ldflags overrides, defaults to `unknown`)
+- Records `scan_started_at` in report metadata just before scanning begins
+
+#### **internal/banner/** - Embedded Banner Text
+- Added `nice_detectbot.txt` (ASCII art banner)
+- Added `banner.go` using `//go:embed` and exposing `Get()` for banner access
+
+#### **internal/report/model.go** - Report Schema
+- Added `ScanStartedAt` (JSON key `scan_started_at`) to report schema
+
+#### **streamlit_app/pages/report_parser.py** - UI Update
+- Added display of `scan_started_at` in report summary section (falls back gracefully when missing)
+
+#### **README.md** - Documentation
+- Documented startup banner + version behavior
+- Documented new `scan_started_at` JSON field and UI display
+
+#### **samples/test.json** - Example Report
+- Added example `scan_started_at` field
+
+---
+
 ## [v1.1.2] - 2026-03-17
 
 ### 🎯 Release Summary

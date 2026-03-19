@@ -41,6 +41,7 @@ with st.expander("리포트 기본 정보", expanded=True):
         st.write(f"**report_version**: {report.get('report_version', '-')}")
         st.write(f"**host**: {report.get('host', '-')}")
         st.write(f"**generated_at**: {fmt_dt(report.get('generated_at'))}")
+        st.write(f"**scan_started_at**: {fmt_dt(report.get('scan_started_at'))}")
         st.write(f"**active_rules**: {', '.join(active_rules) if active_rules else '-'}")
 
     with right:

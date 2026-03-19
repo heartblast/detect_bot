@@ -14,7 +14,7 @@ $BUILD_TIME  = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $VERSION_SUFFIX = $VERSION.Replace(".", "_")
 
 # ldflags
-$LDFLAGS = "-s -w -X main.version=$VERSION -X main.commit=$COMMIT -X main.buildTime=$BUILD_TIME"
+$LDFLAGS = "-s -w -X main.Version=$VERSION -X main.Commit=$COMMIT -X main.BuildTime=$BUILD_TIME"
 
 # dist 초기화
 if (Test-Path $DIST_DIR) {

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/heartblast/dmz_webroot_scanner/internal/banner"
 	"github.com/heartblast/dmz_webroot_scanner/internal/config"
 	"github.com/heartblast/dmz_webroot_scanner/internal/input"
 	"github.com/heartblast/dmz_webroot_scanner/internal/report"
@@ -15,8 +16,12 @@ import (
 	"github.com/heartblast/dmz_webroot_scanner/internal/scan"
 )
 
-// Version of the DMZ Webroot Scanner
-const Version = "v1.1.2"
+// Version and build metadata (set via ldflags when available)
+var (
+	Version   = "v1.1.2"
+	BuildTime = ""
+	Commit    = ""
+)
 
 // printFlagGroup: 플래그들을 그룹 이름과 함께 출력
 func printFlagGroup(title string, names []string) {
@@ -34,11 +39,18 @@ func printFlagGroup(title string, names []string) {
 // 2단계: 설정된 규칙 세트로 웹루트 내 파일 스캔
 // 3단계: 발견된 위험한 파일들을 JSON 리포트로 출력
 func main() {
+	// 배너/버전 출력 (stderr - JSON 출력에 영향을 주지 않도록)
+	fmt.Fprint(os.Stderr, banner.Get())
+	ver := Version
+	if ver == "" {
+		ver = "unknown"
+	}
+	fmt.Fprintf(os.Stderr, "Version: %s\n\n", ver)
+
 	// 커스텀 help 메시지 설정 (옵션을 그룹별로 정리)
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "NICE INFORMATION SERVICE\n")
 		fmt.Fprintf(os.Stderr, "DMZ Webroot Scanner\n")
-		fmt.Fprintf(os.Stderr, "Version: %s\n\n", Version)
 		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\n", os.Args[0])
 		printFlagGroup("INPUT OPTIONS", []string{"server-type", "nginx-dump", "apache-dump", "watch-dir", "config"})
 		printFlagGroup("SCAN/DEPTH OPTIONS", []string{"scan", "exclude", "max-depth", "newer-than-h", "workers", "hash", "max-size-mb", "follow-symlink"})
@@ -110,6 +122,9 @@ func main() {
 	roots = root.NormalizeRoots(roots)
 	rep.Roots = roots                 // 리포트에 수집된 웹루트 기록
 	rep.Stats.RootsCount = len(roots) // 통계: 수집된 루트 개수
+
+	// 스캔 시작 시각 기록 (리포트 최상위 메타데이터로 포함)
+	rep.ScanStartedAt = time.Now().Format(time.RFC3339)
 
 	// [2단계] 선택적 스캔 실행 (scan 플래그가 활성화된 경우에만)
 	// cfg.Scan이 false면 웹루트 수집만 하고 스캔은 건너뜀
