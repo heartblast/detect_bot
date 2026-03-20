@@ -5,12 +5,29 @@
   "scan": true,
   "newer_than_h": 24,
   "max_depth": 12,
+  "max_size_mb": 100,
+  "hash": true,
+  "follow_symlink": false,
   "exclude": ["/var/cache"],
   "watch_dirs": ["/var/www/html"],
   "workers": 4,
+  "allow_mime_prefix": ["text/html", "application/json"],
+  "allow_ext": [".html", ".json"],
+  "enable_rules": ["high_risk_extension"],
+  "disable_rules": ["large_file_in_web_path"],
   "content_scan": true,
   "content_max_bytes": 65536,
+  "content_max_size_kb": 1024,
   "content_exts": [".yaml", ".yml"],
+  "pii_scan": true,
+  "pii_max_bytes": 65536,
+  "pii_max_size_kb": 256,
+  "pii_max_matches": 5,
+  "pii_mask": true,
+  "pii_store_sample": false,
+  "pii_context_keywords": true,
+  "pii_exts": [".yaml", ".json"],
+  "out": "/var/log/dmz_webroot_scanner/sample-report.json",
   "kafka": {
     "enabled": true,
     "brokers": ["broker1:9092", "broker2:9092"],
@@ -18,10 +35,8 @@
     "client_id": "dmz_scanner",
     "tls": true,
     "sasl_enabled": false,
+    "username": "scanner",
+    "password_env": "KAFKA_PASSWORD",
     "mask_sensitive": true
-  },
-  "rules": {
-    "enable": ["high_risk_ext", "secret_patterns"],
-    "disable": ["large_file"]
   }
 }

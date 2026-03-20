@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,24 +11,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// MultiFlag: 명령줄 플래그에서 여러 번 입력된 값들을 저장하는 커스텀 타입
-// 예: -watch-dir /var/www -watch-dir /home/user/web
+// MultiFlag accepts repeatable string flags.
 type MultiFlag []string
 
-// String: MultiFlag를 문자열로 변환하는 Stringer 인터페이스 구현
 func (m *MultiFlag) String() string { return strings.Join(*m, ",") }
 
-// Set: 플래그 파서가 각 입력값을 추가할 때 호출되는 메서드
 func (m *MultiFlag) Set(s string) error {
 	if s == "" {
 		return nil
 	}
-	*m = append(*m, s) // 값을 슬라이스에 추가
+	*m = append(*m, s)
 	return nil
 }
 
-// stringSliceFlag: comma-separated or repeatable string list
-// kafka-brokers 등에서 사용된다.
+// stringSliceFlag accepts comma-separated or repeatable values.
 type stringSliceFlag []string
 
 func (s *stringSliceFlag) String() string { return strings.Join(*s, ",") }
@@ -46,87 +41,75 @@ func (s *stringSliceFlag) Set(val string) error {
 	return nil
 }
 
-// KafkaConfig: Kafka 전송 관련 설정
-// 민감정보는 MaskSensitive 플래그에 따라 이벤트에서 마스킹
-// PasswordEnv에는 비밀번호가 저장된 환경변수 이름이 들어감.
-// Brokers는 복수 호스트를 허용한다.
 type KafkaConfig struct {
-	Enabled       bool     // Kafka 전송 활성화
-	Brokers       []string // broker list
-	Topic         string   // 전송 토픽
-	ClientID      string   // 클라이언트 식별자
-	TLSEnabled    bool     // TLS 사용
-	SASLEnabled   bool     // SASL 인증 사용
-	Username      string   // SASL 사용자명
-	PasswordEnv   string   // 비밀번호가 들어있는 환경변수 이름
-	MaskSensitive bool     // 민감정보 마스킹 여부
+	Enabled       bool     `yaml:"enabled" json:"enabled"`
+	Brokers       []string `yaml:"brokers" json:"brokers"`
+	Topic         string   `yaml:"topic" json:"topic"`
+	ClientID      string   `yaml:"client_id" json:"client_id"`
+	TLSEnabled    bool     `yaml:"tls" json:"tls"`
+	SASLEnabled   bool     `yaml:"sasl_enabled" json:"sasl_enabled"`
+	Username      string   `yaml:"username" json:"username"`
+	PasswordEnv   string   `yaml:"password_env" json:"password_env"`
+	MaskSensitive bool     `yaml:"mask_sensitive" json:"mask_sensitive"`
 }
 
-// Config: 프로그램 실행에 필요한 모든 설정값을 담는 구조체
 type Config struct {
-	// 입력 소스
-	NginxDump  string // Nginx -T 명령 출력 파일 경로 (또는 '-'로 stdin 사용)
-	ApacheDump string // apachectl -S 명령 출력 파일 경로
-	ServerType string // web server type (nginx|apache|manual); empty=auto detect
+	NginxDump  string `yaml:"nginx_dump" json:"nginx_dump"`
+	ApacheDump string `yaml:"apache_dump" json:"apache_dump"`
+	ServerType string `yaml:"server_type" json:"server_type"`
 
-	// 스캔 옵션
-	Scan       bool   // 실제 파일 시스템 스캔 실행 여부
-	Output     string // 출력 JSON 리포트 파일 경로 (또는 '-'로 stdout 사용)
-	MaxDepth   int    // 디렉토리 재귀 최대 깊이
-	MaxSizeMB  int64  // MIME 탐지/해시 계산 시 읽을 파일 최대 크기 (MB)
-	NewerThanH int    // 마지막 N시간 내 수정된 파일만 플래그 (0=disable)
-	Preset     string // predefined option set (safe, balanced, deep, handover, offboarding)
-	ConfigFile string // path to YAML/JSON configuration file (parsed before flags)
+	Scan       bool   `yaml:"scan" json:"scan"`
+	Output     string `yaml:"out" json:"out"`
+	MaxDepth   int    `yaml:"max_depth" json:"max_depth"`
+	MaxSizeMB  int64  `yaml:"max_size_mb" json:"max_size_mb"`
+	NewerThanH int    `yaml:"newer_than_h" json:"newer_than_h"`
+	Preset     string `yaml:"preset" json:"preset"`
+	ConfigFile string `yaml:"config,omitempty" json:"config,omitempty"`
 
-	// 필터 및 화이트리스트
-	Exclude       MultiFlag // 제외할 경로 접두사 (반복 가능) 예: -exclude /tmp -exclude /proc
-	AllowMimePref MultiFlag // 허용된 MIME 타입 프리픽스 (반복 가능)
-	AllowExt      MultiFlag // 허용된 파일 확장자 (반복 가능)
-	WatchDirs     MultiFlag // 수동으로 추가할 감시 디렉토리 (반복 가능)
+	Exclude       MultiFlag `yaml:"exclude" json:"exclude"`
+	AllowMimePref MultiFlag `yaml:"allow_mime_prefix" json:"allow_mime_prefix"`
+	AllowExt      MultiFlag `yaml:"allow_ext" json:"allow_ext"`
+	WatchDirs     MultiFlag `yaml:"watch_dirs" json:"watch_dirs"`
 
-	// 추가 기능
-	ComputeHash   bool // 발견된 파일의 SHA256 해시 계산 여부
-	FollowSymlink bool // 심볼릭 링크 따라가기 여부 (권장하지 않음)
+	ComputeHash   bool `yaml:"hash" json:"hash"`
+	FollowSymlink bool `yaml:"follow_symlink" json:"follow_symlink"`
 
-	// 룰 제어
-	EnableRules  MultiFlag // 명시적으로 활성화할 룰 목록 (comma-separated or repeatable)
-	DisableRules MultiFlag // 명시적으로 비활성화할 룰 목록
+	EnableRules  MultiFlag `yaml:"enable_rules,omitempty" json:"enable_rules,omitempty"`
+	DisableRules MultiFlag `yaml:"disable_rules,omitempty" json:"disable_rules,omitempty"`
 
-	// 설정파일용 중첩 구조 (yaml/JSON) - CLI 플래그와 병합됨
 	Rules struct {
 		Enable  []string `yaml:"enable" json:"enable"`
 		Disable []string `yaml:"disable" json:"disable"`
 	} `yaml:"rules,omitempty" json:"rules,omitempty"`
 
-	// Kafka 이벤트 전송 설정
-	Kafka KafkaConfig
+	Kafka KafkaConfig `yaml:"kafka" json:"kafka"`
 
-	// 성능 최적화
-	Workers int // 파일 스캔 워커 스레드 수 (기본값 4)
+	Workers int `yaml:"workers" json:"workers"`
 
-	// 민감정보 콘텐츠 스캔 옵션
-	ContentScan      bool      // 파일 본문에서 민감정보 패턴 탐지 활성화
-	ContentMaxBytes  int       // 콘텐츠 샘플 최대 읽기 바이트 수
-	ContentMaxSizeKB int64     // 콘텐츠 스캔 대상 파일 최대 크기 (KB)
-	ContentExts      MultiFlag // 콘텐츠 스캔 대상 확장자 (yaml, json, env, conf 등)
+	ContentScan      bool      `yaml:"content_scan" json:"content_scan"`
+	ContentMaxBytes  int       `yaml:"content_max_bytes" json:"content_max_bytes"`
+	ContentMaxSizeKB int64     `yaml:"content_max_size_kb" json:"content_max_size_kb"`
+	ContentExts      MultiFlag `yaml:"content_exts" json:"content_exts"`
 
-	// 개인정보(PII) 탐지 옵션
-	PIIScan            bool      // 개인정보 유출위험 패턴 탐지 활성화
-	PIIExts            MultiFlag // PII 탐지 대상 확장자
-	PIIMaxSizeKB       int64     // PII 탐지 대상 파일 최대 크기 (KB)
-	PIIMaxBytes        int       // PII 탐지 시 최대 읽기 바이트 수
-	PIIMaxMatches      int       // 규칙별 최대 저장 샘플 수
-	PIIMask            bool      // 결과값 마스킹 저장
-	PIIStoreSample     bool      // 샘플 저장 여부 제어
-	PIIContextKeywords bool      // 문맥 기반 보강 활성화
+	PIIScan            bool      `yaml:"pii_scan" json:"pii_scan"`
+	PIIExts            MultiFlag `yaml:"pii_exts" json:"pii_exts"`
+	PIIMaxSizeKB       int64     `yaml:"pii_max_size_kb" json:"pii_max_size_kb"`
+	PIIMaxBytes        int       `yaml:"pii_max_bytes" json:"pii_max_bytes"`
+	PIIMaxMatches      int       `yaml:"pii_max_matches" json:"pii_max_matches"`
+	PIIMask            bool      `yaml:"pii_mask" json:"pii_mask"`
+	PIIStoreSample     bool      `yaml:"pii_store_sample" json:"pii_store_sample"`
+	PIIContextKeywords bool      `yaml:"pii_context_keywords" json:"pii_context_keywords"`
+
+	// Compatibility aliases for UI/generated config payloads.
+	WatchDir   MultiFlag `yaml:"watch_dir,omitempty" json:"watch_dir,omitempty"`
+	ContentExt MultiFlag `yaml:"content_ext,omitempty" json:"content_ext,omitempty"`
+	PIIExt     MultiFlag `yaml:"pii_ext,omitempty" json:"pii_ext,omitempty"`
+	OutputPath string    `yaml:"output,omitempty" json:"output,omitempty"`
 }
 
-// MustParseFlags: 명령줄 플래그를 파싱하여 Config 구조체로 변환
-// 기본값을 설정하고 잘못된 설정을 검증
 func MustParseFlags() Config {
 	var cfg Config
 
-	// 1) 먼저 CLI에서 --config 경로를 찾아 파일을 로드하여 초기값을 채운다
 	cfg.ConfigFile = scanArgValue("--config")
 	if cfg.ConfigFile != "" {
 		if err := cfg.LoadFromFile(cfg.ConfigFile); err != nil {
@@ -135,7 +118,6 @@ func MustParseFlags() Config {
 		}
 	}
 
-	// 이제 플래그 등록 (기본값은 앞서 로드된 cfg의 값)
 	flag.StringVar(&cfg.Preset, "preset", cfg.Preset, "predefined option set (safe, balanced, deep, handover, offboarding)")
 	flag.StringVar(&cfg.ServerType, "server-type", cfg.ServerType, "web server type (nginx|apache|manual)")
 	flag.StringVar(&cfg.NginxDump, "nginx-dump", cfg.NginxDump, "path to nginx -T dump output file, or '-' for stdin")
@@ -177,52 +159,250 @@ func MustParseFlags() Config {
 	flag.StringVar(&cfg.Kafka.PasswordEnv, "kafka-password-env", cfg.Kafka.PasswordEnv, "environment variable name containing Kafka password")
 	flag.BoolVar(&cfg.Kafka.MaskSensitive, "kafka-mask-sensitive", cfg.Kafka.MaskSensitive, "mask sensitive fields in Kafka events")
 
-	// parse CLI flags (overrides defaults coming from config file)
 	flag.Parse()
 
-	// 설정파일 내 nested rules를 CLI 리스트로 병합
 	cfg.EnableRules = mergeStringSlices(cfg.EnableRules, cfg.Rules.Enable)
 	cfg.DisableRules = mergeStringSlices(cfg.DisableRules, cfg.Rules.Disable)
 
-	// 기본값 검증 및 추가 설정
-	if cfg.Workers <= 0 {
-		cfg.Workers = 1
-	}
-
-	if cfg.MaxDepth == 0 {
-		cfg.MaxDepth = 12
-	}
-
-	if cfg.MaxSizeMB == 0 {
-		cfg.MaxSizeMB = 100
-	}
-
-	if cfg.ContentMaxBytes == 0 {
-		cfg.ContentMaxBytes = 65536
-	}
-
-	if cfg.ContentMaxSizeKB == 0 {
-		cfg.ContentMaxSizeKB = 1024
-	}
-
-	if cfg.PIIMaxSizeKB == 0 {
-		cfg.PIIMaxSizeKB = 256
-	}
-
-	if cfg.PIIMaxBytes == 0 {
-		cfg.PIIMaxBytes = 65536
-	}
-
-	if cfg.PIIMaxMatches == 0 {
-		cfg.PIIMaxMatches = 5
-	}
-
-	// 프리셋 적용: CLI 플래그나 설정파일에서 제공되지 않은 값에만 채움
 	if cfg.Preset != "" {
 		applyPreset(&cfg)
 	}
 
-	// 기본 허용 MIME/확장자 및 콘텐츠 대상 확장자
+	applyDefaults(&cfg)
+
+	return cfg
+}
+
+func mergeStringSlices(a, b []string) []string {
+	seen := make(map[string]bool, len(a)+len(b))
+	out := make([]string, 0, len(a)+len(b))
+	for _, s := range append(append([]string{}, a...), b...) {
+		if s == "" || seen[s] {
+			continue
+		}
+		seen[s] = true
+		out = append(out, s)
+	}
+	return out
+}
+
+func scanArgValue(name string) string {
+	args := os.Args[1:]
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		if arg == name {
+			if i+1 < len(args) {
+				return args[i+1]
+			}
+			return ""
+		}
+		if strings.HasPrefix(arg, name+"=") {
+			return strings.SplitN(arg, "=", 2)[1]
+		}
+	}
+	return ""
+}
+
+func (cfg *Config) LoadFromFile(path string) error {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	var fileCfg Config
+	switch strings.ToLower(filepath.Ext(path)) {
+	case ".yaml", ".yml":
+		if err := yaml.Unmarshal(data, &fileCfg); err != nil {
+			return err
+		}
+	case ".json":
+		if err := json.Unmarshal(data, &fileCfg); err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("unsupported config file extension: %s", path)
+	}
+
+	normalizeConfigAliases(&fileCfg)
+	mergeConfig(cfg, &fileCfg)
+	return nil
+}
+
+func normalizeConfigAliases(cfg *Config) {
+	if cfg.Output == "" && cfg.OutputPath != "" {
+		cfg.Output = cfg.OutputPath
+	}
+	if len(cfg.WatchDirs) == 0 && len(cfg.WatchDir) > 0 {
+		cfg.WatchDirs = append(MultiFlag{}, cfg.WatchDir...)
+	}
+	if len(cfg.ContentExts) == 0 && len(cfg.ContentExt) > 0 {
+		cfg.ContentExts = append(MultiFlag{}, cfg.ContentExt...)
+	}
+	if len(cfg.PIIExts) == 0 && len(cfg.PIIExt) > 0 {
+		cfg.PIIExts = append(MultiFlag{}, cfg.PIIExt...)
+	}
+}
+
+func mergeConfig(dst, src *Config) {
+	if dst.Preset == "" {
+		dst.Preset = src.Preset
+	}
+	if dst.ServerType == "" {
+		dst.ServerType = src.ServerType
+	}
+	if dst.NginxDump == "" {
+		dst.NginxDump = src.NginxDump
+	}
+	if dst.ApacheDump == "" {
+		dst.ApacheDump = src.ApacheDump
+	}
+	if !dst.Scan && src.Scan {
+		dst.Scan = true
+	}
+	if dst.Output == "" {
+		dst.Output = src.Output
+	}
+	if dst.MaxDepth == 0 {
+		dst.MaxDepth = src.MaxDepth
+	}
+	if dst.MaxSizeMB == 0 {
+		dst.MaxSizeMB = src.MaxSizeMB
+	}
+	if dst.NewerThanH == 0 {
+		dst.NewerThanH = src.NewerThanH
+	}
+	if len(dst.Exclude) == 0 && len(src.Exclude) > 0 {
+		dst.Exclude = append(MultiFlag{}, src.Exclude...)
+	}
+	if len(dst.AllowMimePref) == 0 && len(src.AllowMimePref) > 0 {
+		dst.AllowMimePref = append(MultiFlag{}, src.AllowMimePref...)
+	}
+	if len(dst.AllowExt) == 0 && len(src.AllowExt) > 0 {
+		dst.AllowExt = append(MultiFlag{}, src.AllowExt...)
+	}
+	if len(dst.WatchDirs) == 0 && len(src.WatchDirs) > 0 {
+		dst.WatchDirs = append(MultiFlag{}, src.WatchDirs...)
+	}
+	if !dst.ComputeHash && src.ComputeHash {
+		dst.ComputeHash = true
+	}
+	if !dst.FollowSymlink && src.FollowSymlink {
+		dst.FollowSymlink = true
+	}
+	if len(dst.EnableRules) == 0 {
+		switch {
+		case len(src.EnableRules) > 0:
+			dst.EnableRules = append(MultiFlag{}, src.EnableRules...)
+		case len(src.Rules.Enable) > 0:
+			dst.EnableRules = append(MultiFlag{}, src.Rules.Enable...)
+		}
+	}
+	if len(dst.DisableRules) == 0 {
+		switch {
+		case len(src.DisableRules) > 0:
+			dst.DisableRules = append(MultiFlag{}, src.DisableRules...)
+		case len(src.Rules.Disable) > 0:
+			dst.DisableRules = append(MultiFlag{}, src.Rules.Disable...)
+		}
+	}
+	if dst.Workers == 0 {
+		dst.Workers = src.Workers
+	}
+	if !dst.ContentScan && src.ContentScan {
+		dst.ContentScan = true
+	}
+	if dst.ContentMaxBytes == 0 {
+		dst.ContentMaxBytes = src.ContentMaxBytes
+	}
+	if dst.ContentMaxSizeKB == 0 {
+		dst.ContentMaxSizeKB = src.ContentMaxSizeKB
+	}
+	if len(dst.ContentExts) == 0 && len(src.ContentExts) > 0 {
+		dst.ContentExts = append(MultiFlag{}, src.ContentExts...)
+	}
+	if !dst.PIIScan && src.PIIScan {
+		dst.PIIScan = true
+	}
+	if len(dst.PIIExts) == 0 && len(src.PIIExts) > 0 {
+		dst.PIIExts = append(MultiFlag{}, src.PIIExts...)
+	}
+	if dst.PIIMaxSizeKB == 0 {
+		dst.PIIMaxSizeKB = src.PIIMaxSizeKB
+	}
+	if dst.PIIMaxBytes == 0 {
+		dst.PIIMaxBytes = src.PIIMaxBytes
+	}
+	if dst.PIIMaxMatches == 0 {
+		dst.PIIMaxMatches = src.PIIMaxMatches
+	}
+	if !dst.PIIMask && src.PIIMask {
+		dst.PIIMask = true
+	}
+	if !dst.PIIStoreSample && src.PIIStoreSample {
+		dst.PIIStoreSample = true
+	}
+	if !dst.PIIContextKeywords && src.PIIContextKeywords {
+		dst.PIIContextKeywords = true
+	}
+
+	mergeKafkaConfig(&dst.Kafka, &src.Kafka)
+}
+
+func mergeKafkaConfig(dst, src *KafkaConfig) {
+	if !dst.Enabled && src.Enabled {
+		dst.Enabled = true
+	}
+	if len(dst.Brokers) == 0 && len(src.Brokers) > 0 {
+		dst.Brokers = append([]string{}, src.Brokers...)
+	}
+	if dst.Topic == "" {
+		dst.Topic = src.Topic
+	}
+	if dst.ClientID == "" {
+		dst.ClientID = src.ClientID
+	}
+	if !dst.TLSEnabled && src.TLSEnabled {
+		dst.TLSEnabled = true
+	}
+	if !dst.SASLEnabled && src.SASLEnabled {
+		dst.SASLEnabled = true
+	}
+	if dst.Username == "" {
+		dst.Username = src.Username
+	}
+	if dst.PasswordEnv == "" {
+		dst.PasswordEnv = src.PasswordEnv
+	}
+	if !dst.MaskSensitive && src.MaskSensitive {
+		dst.MaskSensitive = true
+	}
+}
+
+func applyDefaults(cfg *Config) {
+	if cfg.Workers <= 0 {
+		cfg.Workers = 4
+	}
+	if cfg.MaxDepth == 0 {
+		cfg.MaxDepth = 12
+	}
+	if cfg.MaxSizeMB == 0 {
+		cfg.MaxSizeMB = 100
+	}
+	if cfg.ContentMaxBytes == 0 {
+		cfg.ContentMaxBytes = 65536
+	}
+	if cfg.ContentMaxSizeKB == 0 {
+		cfg.ContentMaxSizeKB = 1024
+	}
+	if cfg.PIIMaxSizeKB == 0 {
+		cfg.PIIMaxSizeKB = 256
+	}
+	if cfg.PIIMaxBytes == 0 {
+		cfg.PIIMaxBytes = 65536
+	}
+	if cfg.PIIMaxMatches == 0 {
+		cfg.PIIMaxMatches = 5
+	}
 	if len(cfg.AllowMimePref) == 0 {
 		cfg.AllowMimePref = []string{
 			"text/html", "text/css", "application/javascript", "text/javascript", "application/json",
@@ -249,158 +429,8 @@ func MustParseFlags() Config {
 			".env", ".ini", ".txt", ".log", ".csv", ".tsv",
 		}
 	}
-
-	return cfg
 }
 
-// mergeStringSlices: 두 슬라이스를 합치되 중복을 제거
-func mergeStringSlices(a, b []string) []string {
-	m := map[string]bool{}
-	for _, s := range a {
-		m[s] = true
-	}
-	for _, s := range b {
-		if !m[s] {
-			m[s] = true
-			a = append(a, s)
-		}
-	}
-	return a
-}
-
-// scanArgValue: os.Args 리스트에서 지정된 플래그에 해당하는 값을 찾아 반환
-// --config path 또는 --config=path 등을 지원한다.
-func scanArgValue(name string) string {
-	for i, arg := range os.Args[1:] {
-		if arg == name && i+2 <= len(os.Args[1:]) {
-			return os.Args[i+2]
-		}
-		if strings.HasPrefix(arg, name+"=") {
-			return strings.SplitN(arg, "=", 2)[1]
-		}
-	}
-	return ""
-}
-
-// LoadFromFile: YAML 또는 JSON 설정파일을 읽어 Config에 반영
-// 기존 필드값을 덮어쓰기하지 않고 zero값인 항목만 채운다.
-func (cfg *Config) LoadFromFile(path string) error {
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		return err
-	}
-	var fileCfg Config
-	switch strings.ToLower(filepath.Ext(path)) {
-	case ".yaml", ".yml":
-		if err := yaml.Unmarshal(data, &fileCfg); err != nil {
-			return err
-		}
-	case ".json":
-		if err := json.Unmarshal(data, &fileCfg); err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("unsupported config file extension: %s", path)
-	}
-	// merge: only set zero-valued fields in cfg
-	mergeConfig(cfg, &fileCfg)
-	return nil
-}
-
-// mergeConfig: fileCfg에서 비어있지 않은 값이 있으면 dst에 채우되, dst의 값이
-// 기본(zero)인 경우에만 덮어쓴다. 슬라이스의 경우 dst가 비어있을 때에만 교체.
-func mergeConfig(dst, src *Config) {
-	if dst.Preset == "" {
-		dst.Preset = src.Preset
-	}
-	if dst.ServerType == "" {
-		dst.ServerType = src.ServerType
-	}
-	if dst.NginxDump == "" {
-		dst.NginxDump = src.NginxDump
-	}
-	if dst.ApacheDump == "" {
-		dst.ApacheDump = src.ApacheDump
-	}
-	if dst.Scan == false && src.Scan {
-		dst.Scan = src.Scan
-	}
-	if dst.Output == "" {
-		dst.Output = src.Output
-	}
-	if dst.MaxDepth == 0 {
-		dst.MaxDepth = src.MaxDepth
-	}
-	if dst.MaxSizeMB == 0 {
-		dst.MaxSizeMB = src.MaxSizeMB
-	}
-	if dst.NewerThanH == 0 {
-		dst.NewerThanH = src.NewerThanH
-	}
-	if len(dst.Exclude) == 0 && len(src.Exclude) > 0 {
-		dst.Exclude = src.Exclude
-	}
-	if len(dst.AllowMimePref) == 0 && len(src.AllowMimePref) > 0 {
-		dst.AllowMimePref = src.AllowMimePref
-	}
-	if len(dst.AllowExt) == 0 && len(src.AllowExt) > 0 {
-		dst.AllowExt = src.AllowExt
-	}
-	if len(dst.WatchDirs) == 0 && len(src.WatchDirs) > 0 {
-		dst.WatchDirs = src.WatchDirs
-	}
-	if dst.ComputeHash == false && src.ComputeHash {
-		dst.ComputeHash = src.ComputeHash
-	}
-	if dst.FollowSymlink == false && src.FollowSymlink {
-		dst.FollowSymlink = src.FollowSymlink
-	}
-	// CLI-style enable/disable lists
-	if len(dst.EnableRules) == 0 && len(src.EnableRules) > 0 {
-		dst.EnableRules = src.EnableRules
-	}
-	if len(dst.DisableRules) == 0 && len(src.DisableRules) > 0 {
-		dst.DisableRules = src.DisableRules
-	}
-	// config file nested rules block
-	if len(dst.EnableRules) == 0 && len(src.Rules.Enable) > 0 {
-		dst.EnableRules = src.Rules.Enable
-	}
-	if len(dst.DisableRules) == 0 && len(src.Rules.Disable) > 0 {
-		dst.DisableRules = src.Rules.Disable
-	}
-	// kafka
-	if dst.Kafka.Enabled == false && src.Kafka.Enabled {
-		dst.Kafka = src.Kafka
-	}
-	if dst.Kafka.Brokers == nil && src.Kafka.Brokers != nil {
-		dst.Kafka.Brokers = src.Kafka.Brokers
-	}
-	if dst.Kafka.Topic == "" {
-		dst.Kafka.Topic = src.Kafka.Topic
-	}
-	if dst.Kafka.ClientID == "" {
-		dst.Kafka.ClientID = src.Kafka.ClientID
-	}
-	if dst.Kafka.TLSEnabled == false && src.Kafka.TLSEnabled {
-		dst.Kafka.TLSEnabled = src.Kafka.TLSEnabled
-	}
-	if dst.Kafka.SASLEnabled == false && src.Kafka.SASLEnabled {
-		dst.Kafka.SASLEnabled = src.Kafka.SASLEnabled
-	}
-	if dst.Kafka.Username == "" {
-		dst.Kafka.Username = src.Kafka.Username
-	}
-	if dst.Kafka.PasswordEnv == "" {
-		dst.Kafka.PasswordEnv = src.Kafka.PasswordEnv
-	}
-	if dst.Kafka.MaskSensitive == false && src.Kafka.MaskSensitive {
-		dst.Kafka.MaskSensitive = src.Kafka.MaskSensitive
-	}
-	// その他 필드는 단순 가중 함수로 처리할 수 있음
-}
-
-// applyPreset: 선택된 프리셋 값을 cfg에 채운다 (단 CLI에서 이미 설정한 값은 덮어씌우지 않는다)
 func applyPreset(cfg *Config) {
 	var preset Config
 	switch cfg.Preset {
@@ -416,7 +446,7 @@ func applyPreset(cfg *Config) {
 		preset.ContentScan = true
 		preset.ContentMaxBytes = 65536
 	case "deep":
-		preset.MaxDepth = 0 // unlimited
+		preset.MaxDepth = 0
 		preset.Scan = true
 		preset.Workers = 8
 		preset.ContentScan = true
@@ -433,10 +463,9 @@ func applyPreset(cfg *Config) {
 		preset.ContentScan = true
 		preset.ContentMaxBytes = 65536
 	default:
-		// unknown preset ignored
 		return
 	}
-	// merge only zero / unset values
+
 	if cfg.MaxDepth == 0 {
 		cfg.MaxDepth = preset.MaxDepth
 	}

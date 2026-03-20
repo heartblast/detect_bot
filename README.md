@@ -446,3 +446,67 @@ Kafka 전송 실패는 전체 스캔에 영향을 주지 않으며, 로컬 JSON 
 * 정책 외부화(YAML): allowlist/exclude/임계치/리스크 스코어
 * 민감정보 탐지 룰 YAML/JSON 외부화 (패턴셋 커스터마이징)
 * SIEM 연계를 위한 이벤트 스키마 확장/전송 방식 고도화
+
+---
+
+## Config File Notes
+
+`--config` loads YAML or JSON values first, and then explicit CLI flags override those loaded values. This means config files should be treated as reusable defaults, while one-off operational tuning can stay on the command line.
+
+The loader supports snake_case config keys such as `server_type`, `nginx_dump`, `apache_dump`, `watch_dirs`, `allow_mime_prefix`, `allow_ext`, `content_scan`, `content_max_bytes`, `content_max_size_kb`, `content_exts`, `pii_scan`, `pii_exts`, `pii_max_size_kb`, `pii_max_bytes`, `pii_max_matches`, `pii_mask`, `pii_store_sample`, `pii_context_keywords`, `max_depth`, `max_size_mb`, `newer_than_h`, `follow_symlink`, `workers`, `hash`, `out`, and nested `kafka.*` fields.
+
+For compatibility with Streamlit-generated files, the loader also accepts aliases such as `watch_dir`, `content_ext`, and `pii_ext`. CLI option names and config keys do not always match one-to-one; for example, `--watch-dir` maps to `watch_dirs` in config files.
+
+YAML example:
+
+```yaml
+server_type: nginx
+nginx_dump: -
+scan: true
+watch_dirs:
+  - /var/www/html
+newer_than_h: 24
+max_depth: 12
+workers: 4
+hash: true
+content_scan: true
+content_exts:
+  - .yaml
+  - .json
+pii_scan: true
+pii_exts:
+  - .yaml
+  - .txt
+out: /var/log/dmz_webroot_scanner/report.json
+kafka:
+  enabled: true
+  brokers:
+    - broker1:9092
+  topic: dmz.scan.findings
+  client_id: dmz_scanner
+  tls: true
+  sasl_enabled: false
+  mask_sensitive: true
+```
+
+JSON example:
+
+```json
+{
+  "server_type": "manual",
+  "scan": true,
+  "watch_dirs": ["/srv/www"],
+  "workers": 2,
+  "content_scan": true,
+  "content_exts": [".env"],
+  "pii_scan": true,
+  "pii_exts": [".txt"],
+  "out": "/var/log/dmz_webroot_scanner/report.json"
+}
+```
+
+Manual verification checklist:
+1. Run with only a YAML config file.
+2. Run with only a JSON config file.
+3. Run with `--config` plus a few CLI overrides such as `--workers` or `--watch-dir`.
+4. Run without `--config` and confirm existing CLI-only behavior is unchanged.

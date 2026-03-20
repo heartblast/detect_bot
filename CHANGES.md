@@ -1,5 +1,36 @@
 # Changelog - DMZ Webroot Scanner
 
+## [v1.1.4] - 2026-03-20
+
+### Release Summary
+- Fixed `--config` YAML/JSON loading so snake_case settings are applied reliably from config files
+- Added explicit config tags for Go structs and improved config + CLI merge coverage
+- Updated sample config files and README to match the actual supported config schema
+- Verified compatibility with Streamlit-generated config keys such as `watch_dir`, `content_ext`, and `pii_ext`
+
+### Detailed Changes
+
+#### **internal/config/config.go** - Config File Compatibility Fix
+- Added explicit YAML/JSON tags to `Config` and `KafkaConfig`
+- Normalized Streamlit-style alias keys into the primary config fields during file load
+- Expanded `mergeConfig()` to cover workers, content scan, PII scan, and Kafka detail fields
+- Kept the existing precedence model of `config file defaults + CLI overrides`
+- Hardened early `--config` scanning for both `--config path` and `--config=path`
+
+#### **internal/config/config_test.go** - Regression Coverage
+- Added YAML config loading test with Streamlit-style keys
+- Added JSON config loading test with snake_case keys
+- Added merge behavior test to ensure explicit CLI values are preserved
+- Added `scanArgValue()` test for both supported `--config` syntaxes
+
+#### **sample_config.yaml / sample_config.json**
+- Updated sample keys to match the supported snake_case schema
+- Expanded examples to include content scan, PII scan, hash, output, and Kafka detail fields
+
+#### **README.md**
+- Clarified how `--config` works and how config file values interact with CLI overrides
+- Documented the snake_case config key style and compatibility aliases used by Streamlit exports
+- Added concrete YAML/JSON examples aligned with the current loader behavior
 ## [v1.1.3] - 2026-03-19
 
 ### 🎯 Release Summary
