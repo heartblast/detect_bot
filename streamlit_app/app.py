@@ -20,6 +20,7 @@ st.caption("dmz_webroot_scanner 사용과 분석 결과 해석을 돕는 Streaml
 
 with st.sidebar:
     st.header("바로가기")
+    st.page_link("pages/scenario_generator.py", label="시나리오 기반 설정기")
     st.page_link("pages/option_generator.py", label="옵션 생성기")
     st.page_link("pages/report_parser.py", label="JSON 리포트 해석기")
 

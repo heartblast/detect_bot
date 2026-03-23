@@ -1,5 +1,37 @@
 # Changelog - DMZ Webroot Scanner
 
+## [Unreleased] - 2026-03-23
+
+### Release Summary
+- Added a new Streamlit `시나리오 기반 설정기` page while keeping the existing option-oriented generator intact
+- Split beginner-friendly guided setup and advanced option tuning into a separate wizard-style UX
+- Added scenario-to-real-option mapping logic so presets only generate currently supported CLI/YAML fields
+- Improved usability for security and operations teams with path review, rule summaries, load estimation, and YAML reuse
+
+### Detailed Changes
+
+#### **streamlit_app/pages/scenario_generator.py** - New Guided Wizard UI
+- Added a separate Streamlit page for scenario-driven option generation
+- Introduced recommendation cards for `안전 점검`, `반출 징후 점검`, `설정정보 노출 점검`, `사고 대응/정밀 점검`
+- Added easy-setup flow for server type, inspection scenario, intensity, additional paths, and output path
+- Added advanced settings expander for actual supported options such as allowlist, depth, workers, hash, content scan, PII scan, rules, and Kafka
+- Added generated CLI, YAML preview, JSON preview, rule summary, expected scope, expected load, and execution checkpoints
+- Added local save/load/delete support for frequently used Streamlit wizard presets
+
+#### **streamlit_app/lib/scenario_builder.py** - Scenario Mapping Layer
+- Added explicit mapping tables for inspection scenarios, intensity profiles, and recommended packs
+- Added helper logic to translate user goals into supported config fields without inventing unsupported CLI flags
+- Added automatic dump-path candidate parsing for Nginx `root/alias` and Apache `DocumentRoot`
+- Added candidate include/exclude handling that reflects deselected auto-extracted paths through supported exclusion settings
+- Added summaries for applied rule focus, expected scope, execution checkpoints, and estimated load
+
+#### **streamlit_app/app.py**
+- Added a new sidebar menu entry for the scenario-based generator while preserving the existing option generator and report parser links
+
+#### **README.md**
+- Documented the difference between the existing option generator and the new scenario-based wizard
+- Added the new wizard's target users, setup flow, generated artifacts, and guided-vs-advanced usage model
+
 ## [v1.1.4] - 2026-03-20
 
 ### Release Summary

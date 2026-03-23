@@ -70,7 +70,7 @@ func main() {
 	}
 
 	// final configuration logging for transparency
-	fmt.Fprintf(os.Stderr, "Final configuration: %+v\n", cfg)
+	//fmt.Fprintf(os.Stderr, "Final configuration: %+v\n", cfg)
 
 	// rep: 최종 보고서 구조체. 리포트 메타데이터 초기화
 	rep := report.Report{
