@@ -1,6 +1,6 @@
 package rules
 
-import "github.com/heartblast/dmz_webroot_scanner/internal/model"
+import "github.com/heartblast/detect_bot/internal/model"
 
 // LargeFileRule: 대용량 파일을 검사
 // 차단, 큰 파일은 임시 스테이징 또는 백업 누수 가능성을 나타냄(Heuristic)

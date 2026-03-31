@@ -271,7 +271,7 @@ with tab_upload:
             uploaded_file = st.file_uploader(
                 "JSON 리포트 업로드",
                 type=["json"],
-                help="dmz_webroot_scanner 결과 JSON 파일을 업로드합니다.",
+                help="Detect Bot 결과 JSON 파일을 업로드합니다.",
             )
             original_path = st.text_input(
                 "원본 JSON 리포트 경로",

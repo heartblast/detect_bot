@@ -17,7 +17,7 @@
 - Added best-effort Linux and macOS OS detail parsing while keeping scan execution non-blocking on metadata lookup failures
 - Added unit tests for required field population and OS normalization behavior
 
-#### **internal/report/model.go / cmd/dmz_webroot_scanner/main.go**
+#### **internal/report/model.go / cmd/detectbot/main.go**
 - Expanded the top-level report schema so `host` is now a structured object instead of a plain string
 - Attached collected host metadata to the report before scan execution
 - Added operator-friendly console logs for scan start, root discovery, filesystem scan progress, completion, failure, and final summary output
@@ -116,7 +116,7 @@
 
 ### 📝 Detailed Changes
 
-#### **cmd/dmz_webroot_scanner/main.go** - Startup Banner + Scan Timestamp
+#### **cmd/detectbot/main.go** - Startup Banner + Scan Timestamp
 - Prints embedded ASCII banner on startup (stderr) to avoid polluting JSON output
 - Prints program version below the banner (supports ldflags overrides, defaults to `unknown`)
 - Records `scan_started_at` in report metadata just before scanning begins
@@ -147,7 +147,7 @@ Added version display to help message. The `-h` flag now shows the current progr
 
 ### 📝 Detailed Changes
 
-#### **cmd/dmz_webroot_scanner/main.go** - Version Display Enhancement
+#### **cmd/detectbot/main.go** - Version Display Enhancement
 - Added `Version` constant containing current version "v1.1.2"
 - Updated `flag.Usage` function to display version in help output
 - Help message now shows: "Version: v1.1.2"
@@ -244,7 +244,7 @@ Complete restructuring and feature expansion to support Streamlit UI integration
 
 ---
 
-### 2. **cmd/dmz_webroot_scanner/main.go** - Main Entry Point Reorganization
+### 2. **cmd/detectbot/main.go** - Main Entry Point Reorganization
 
 #### New Helper Functions
 - **`printFlagGroup(title string, names []string)`** - New
@@ -723,7 +723,7 @@ PII (Personal Identifiable Information) detection feature for text-based files. 
 
 ---
 
-### 4. **cmd/dmz_webroot_scanner/main.go** - PII Rule Integration
+### 4. **cmd/detectbot/main.go** - PII Rule Integration
 
 #### Updated Functions
 - **`makeRuleSet(cfg config.Config) []rules.Rule`** - Added PII rule creation

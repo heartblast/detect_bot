@@ -10,8 +10,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/heartblast/dmz_webroot_scanner/internal/config"
-	"github.com/heartblast/dmz_webroot_scanner/internal/root"
+	"github.com/heartblast/detect_bot/internal/config"
+	"github.com/heartblast/detect_bot/internal/root"
 )
 
 func walkRoot(r root.RootEntry, cfg config.Config, out chan<- walkItem) {

@@ -16,14 +16,14 @@ from utils.meaning_loader import get_pattern_meaning, get_reason_meaning
 
 st.title("DMZ 스캔 결과 해석기")
 st.caption(
-    "dmz_webroot_scanner JSON 결과를 업로드하면 위험도, 탐지사유, 루트 경로, "
+    "Detect Bot JSON 결과를 업로드하면 위험도, 탐지사유, 루트 경로, "
     "마스킹된 증거를 해석해 보여줍니다."
 )
 
 uploaded = st.file_uploader("JSON 결과 파일 업로드", type=["json"])
 
 if not uploaded:
-    st.info("dmz_webroot_scanner 결과 JSON 파일을 업로드해 주세요.")
+    st.info("Detect Bot 결과 JSON 파일을 업로드해 주세요.")
     st.stop()
 
 report = safe_json_load(uploaded)

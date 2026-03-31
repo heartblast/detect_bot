@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/heartblast/dmz_webroot_scanner/internal/config"
+	"github.com/heartblast/detect_bot/internal/config"
 
 	"github.com/twmb/franz-go/pkg/kgo"
 )

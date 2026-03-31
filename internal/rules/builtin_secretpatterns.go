@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/heartblast/dmz_webroot_scanner/internal/model"
+	"github.com/heartblast/detect_bot/internal/model"
 )
 
 // SecretPatternsRule: 파일 본문에서 민감정보 패턴(연결정보, 자격증명, 비공개 키 등)을 탐지

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_NAME="dmz_webroot_scanner"
-MAIN_PKG="./cmd/dmz_webroot_scanner"
+APP_NAME="detectbot"
+MAIN_PKG="./cmd/detectbot"
 DIST_DIR="dist"
 
 VERSION="1.1.3"

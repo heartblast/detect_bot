@@ -1,5 +1,5 @@
 """
-Configuration builder functions for DMZ Webroot Scanner
+Configuration builder functions for Detect Bot
 """
 
 import shlex
@@ -94,14 +94,14 @@ def build_common_flags_list_without_server_type(config: dict):
 
 def build_command(config: dict) -> str:
     """Build complete CLI command"""
-    cmd = ["./dmz_webroot_scanner_linux_amd64_v1_1_2", "--scan"]
+    cmd = ["./detectbot_linux_amd64_v1_1_3", "--scan"]
 
     if config["server_type"] == "nginx":
         if config["nginx_input_mode"] == "덤프 파일 경로" and config["nginx_dump_path"]:
             cmd += ["--nginx-dump", config["nginx_dump_path"]]
         elif config["nginx_input_mode"] == "표준입력(pipe) 명령":
             return (
-                "nginx -T 2>&1 | ./dmz_webroot_scanner_linux_amd64_v1_1_2 --scan --server-type nginx --nginx-dump - "
+                "nginx -T 2>&1 | ./detectbot_linux_amd64_v1_1_3 --scan --server-type nginx --nginx-dump - "
                 + " ".join(shlex.quote(p) for p in build_common_flags_list_without_server_type(config))
             )
     elif config["server_type"] == "apache":
@@ -109,7 +109,7 @@ def build_command(config: dict) -> str:
             cmd += ["--apache-dump", config["apache_dump_path"]]
         elif config["apache_input_mode"] == "표준입력(pipe) 명령":
             return (
-                "apachectl -S 2>&1 | ./dmz_webroot_scanner_linux_amd64_v1_1_2 --scan --server-type apache --apache-dump - "
+                "apachectl -S 2>&1 | ./detectbot_linux_amd64_v1_1_3 --scan --server-type apache --apache-dump - "
                 + " ".join(shlex.quote(p) for p in build_common_flags_list_without_server_type(config))
             )
 

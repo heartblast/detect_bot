@@ -1,8 +1,8 @@
 package report
 
 import (
-	"github.com/heartblast/dmz_webroot_scanner/internal/root"
-	"github.com/heartblast/dmz_webroot_scanner/internal/systeminfo"
+	"github.com/heartblast/detect_bot/internal/root"
+	"github.com/heartblast/detect_bot/internal/systeminfo"
 )
 
 // Finding stores a single suspicious file detected during scanning.

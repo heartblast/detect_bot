@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/heartblast/dmz_webroot_scanner/internal/root"
+	"github.com/heartblast/detect_bot/internal/root"
 )
 
 // ParseNginxDump: 'nginx -T' 명령 출력에서 root/alias 디렉토리를 파싱

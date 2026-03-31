@@ -135,13 +135,13 @@ DMZ 구간 웹서버의 웹서빙 경로(root/alias/DocumentRoot) 를 웹서버 
 ### 로컬 빌드
 
 ```bash
-go build -o dmz_webroot_scanner ./cmd/dmz_webroot_scanner
+go build -o detectbot ./cmd/detectbot
 ```
 
 ### Windows PowerShell 예시
 
 ```powershell
-go build -o dmz_webroot_scanner.exe .\cmd\dmz_webroot_scanner
+go build -o detectbot.exe .\cmd\detectbot
 ```
 
 ### Linux 크로스 빌드 예시
@@ -149,7 +149,7 @@ go build -o dmz_webroot_scanner.exe .\cmd\dmz_webroot_scanner
 ```powershell
 $env:GOOS="linux"
 $env:GOARCH="amd64"
-go build -trimpath -ldflags "-s -w" -o dist/dmz_webroot_scanner ./cmd/dmz_webroot_scanner
+go build -trimpath -ldflags "-s -w" -o dist/detectbot ./cmd/detectbot
 ```
 
 ---
@@ -159,26 +159,26 @@ go build -trimpath -ldflags "-s -w" -o dist/dmz_webroot_scanner ./cmd/dmz_webroo
 ### 1) Nginx 덤프 입력 + 스캔
 
 ```bash
-nginx -T 2>&1 | ./dmz_webroot_scanner \
+nginx -T 2>&1 | ./detectbot \
   --server-type nginx \
   --nginx-dump - \
   --scan \
   --newer-than-h 24 \
   --max-depth 10 \
   --exclude /var/cache \
-  --out /var/log/dmz_webroot_scanner/report-$(date +%F).json
+  --out /var/log/detectbot/report-$(date +%F).json
 ```
 
 ### 2) Apache 덤프 입력 + 스캔
 
 ```bash
-apachectl -S 2>&1 | ./dmz_webroot_scanner \
+apachectl -S 2>&1 | ./detectbot \
   --server-type apache \
   --apache-dump - \
   --scan \
   --newer-than-h 24 \
   --max-depth 10 \
-  --out /var/log/dmz_webroot_scanner/report-$(date +%F).json
+  --out /var/log/detectbot/report-$(date +%F).json
 ```
 
 > Apache 환경에서는 `apachectl -S` 출력에 `DocumentRoot`가 보이지 않으면 roots가 비어 있을 수 있습니다.
@@ -187,7 +187,7 @@ apachectl -S 2>&1 | ./dmz_webroot_scanner \
 ### 3) 수동 경로 기반 스캔
 
 ```bash
-./dmz_webroot_scanner \
+./detectbot \
   --server-type manual \
   --watch-dir /var/www/html \
   --watch-dir /data/upload \
@@ -200,7 +200,7 @@ apachectl -S 2>&1 | ./dmz_webroot_scanner \
 ### 4) 콘텐츠 스캔 활성화
 
 ```bash
-nginx -T 2>&1 | ./dmz_webroot_scanner \
+nginx -T 2>&1 | ./detectbot \
   --nginx-dump - \
   --scan \
   --content-scan \
@@ -216,7 +216,7 @@ nginx -T 2>&1 | ./dmz_webroot_scanner \
 ### 5) PII 탐지 활성화
 
 ```bash
-nginx -T 2>&1 | ./dmz_webroot_scanner \
+nginx -T 2>&1 | ./detectbot \
   --nginx-dump - \
   --scan \
   --pii-scan \
@@ -235,7 +235,7 @@ nginx -T 2>&1 | ./dmz_webroot_scanner \
 ### 6) 해시 포함
 
 ```bash
-nginx -T 2>&1 | ./dmz_webroot_scanner \
+nginx -T 2>&1 | ./detectbot \
   --nginx-dump - \
   --scan \
   --hash \
@@ -246,7 +246,7 @@ nginx -T 2>&1 | ./dmz_webroot_scanner \
 ### 7) 룰 개별 제어
 
 ```bash
-./dmz_webroot_scanner \
+./detectbot \
   --watch-dir /var/www/html \
   --scan \
   --disable-rules large_file \
@@ -257,13 +257,13 @@ nginx -T 2>&1 | ./dmz_webroot_scanner \
 ### 8) Kafka 전송 활성화
 
 ```bash
-./dmz_webroot_scanner \
+./detectbot \
   --watch-dir /var/www/html \
   --scan \
   --kafka-enabled \
   --kafka-brokers broker1:9092,broker2:9092 \
   --kafka-topic dmz.scan.findings \
-  --kafka-client-id dmz_scanner \
+  --kafka-client-id detectbot \
   --kafka-tls \
   --kafka-mask-sensitive \
   --out /tmp/report.json
@@ -402,7 +402,7 @@ kafka:
   brokers:
     - broker1:9092
   topic: dmz.scan.findings
-  client_id: dmz_webroot_scanner
+  client_id: detectbot
   tls: false
   sasl_enabled: false
   username: ""
@@ -413,7 +413,7 @@ kafka:
 실행 예시:
 
 ```bash
-nginx -T 2>&1 | ./dmz_webroot_scanner --config sample_config.yaml
+nginx -T 2>&1 | ./detectbot --config sample_config.yaml
 ```
 
 CLI로 명시한 값은 설정 파일 값보다 우선하는 방식으로 사용하는 것이 맞습니다.

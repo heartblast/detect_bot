@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/heartblast/dmz_webroot_scanner/internal/root"
+	"github.com/heartblast/detect_bot/internal/root"
 )
 
 // ParseApacheDump: 'apachectl -S' 명령 출력에서 DocumentRoot 디렉토리를 파싱

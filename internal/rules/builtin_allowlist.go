@@ -3,7 +3,7 @@ package rules
 import (
 	"strings"
 
-	"github.com/heartblast/dmz_webroot_scanner/internal/model"
+	"github.com/heartblast/detect_bot/internal/model"
 )
 
 // AllowlistRule: 파일의 MIME 타입과 확장자가 허용 목록에 있는지 검사

@@ -75,7 +75,7 @@ if "preset_name" not in st.session_state:
     apply_preset("균형 모드")
 
 st.title("🛡️ DMZ 웹서빙 경로 보안 점검 옵션 생성기")
-st.caption("dmz_webroot_scanner v1.1.3 옵션에 맞춘 실행 명령과 설정 예시를 생성합니다.")
+st.caption("detectbot v1.1.3 옵션에 맞춘 실행 명령과 설정 예시를 생성합니다.")
 st.caption("각 옵션 오른쪽의 `?` 아이콘에서 사용 목적과 운영 시 주의사항을 확인할 수 있습니다.")
 
 preset_col1, preset_col2 = st.columns([2, 3])

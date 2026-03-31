@@ -1,4 +1,4 @@
-module github.com/heartblast/dmz_webroot_scanner
+module github.com/heartblast/detect_bot
 
 go 1.24.0
 

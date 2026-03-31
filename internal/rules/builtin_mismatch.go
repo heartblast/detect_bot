@@ -3,7 +3,7 @@ package rules
 import (
 	"strings"
 
-	"github.com/heartblast/dmz_webroot_scanner/internal/model"
+	"github.com/heartblast/detect_bot/internal/model"
 )
 
 // ExtMimeMismatchRule: 파일 확장자와 스니프된 MIME 타입이 일치하지 않는 경우 확인

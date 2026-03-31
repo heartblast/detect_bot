@@ -18,7 +18,7 @@ from lib.constants import (
 from lib.utils import non_empty_lines
 
 
-SAFE_OUTPUT_PATH = "/tmp/dmz_webroot_scan_report.json"
+SAFE_OUTPUT_PATH = "/tmp/detectbot_scan_report.json"
 SCENARIO_PRESET_FILE = Path(__file__).resolve().parents[1] / "data" / "scenario_presets.json"
 
 DEFAULT_EXCLUDES = [
@@ -233,7 +233,7 @@ def default_config() -> dict:
         "kafka_enabled": False,
         "kafka_brokers": "",
         "kafka_topic": "",
-        "kafka_client_id": "dmz_webroot_scanner",
+        "kafka_client_id": "detectbot",
         "kafka_tls": False,
         "kafka_sasl_enabled": False,
         "kafka_username": "",

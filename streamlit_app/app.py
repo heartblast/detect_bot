@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 st.title("DMZ 웹루트 스캐너 사용 도우미")
-st.caption("dmz_webroot_scanner 사용과 분석 결과 해석을 돕는 Streamlit 페이지")
+st.caption("Detect Bot 사용과 분석 결과 해석을 돕는 Streamlit 페이지")
 
 with st.sidebar:
     st.header("바로가기")
@@ -26,7 +26,7 @@ with st.sidebar:
 
 st.markdown("## 개요")
 st.write(
-    "이 화면은 dmz_webroot_scanner의 실행 옵션을 만들고, "
+    "이 화면은 Detect Bot의 실행 옵션을 만들고, "
     "스캔 결과 JSON을 해석하는 보조 UI입니다."
 )
 
@@ -63,23 +63,23 @@ tab1, tab2, tab3 = st.tabs(["Nginx", "Apache", "JSON 결과"])
 
 with tab1:
     st.code(
-        """nginx -T 2>&1 | ./dmz_webroot_scanner \
+        """nginx -T 2>&1 | ./detectbot \
   --nginx-dump - \
   --scan \
   --newer-than-h 24 \
   --max-depth 10 \
-  --out /var/log/dmz_webroot_scanner/report.json""",
+  --out /var/log/detectbot/report.json""",
         language="bash",
     )
 
 with tab2:
     st.code(
-        """apachectl -S 2>&1 | ./dmz_webroot_scanner \
+        """apachectl -S 2>&1 | ./detectbot \
   --apache-dump - \
   --scan \
   --newer-than-h 24 \
   --max-depth 10 \
-  --out /var/log/dmz_webroot_scanner/report.json""",
+  --out /var/log/detectbot/report.json""",
         language="bash",
     )
 

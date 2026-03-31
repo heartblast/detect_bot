@@ -1,4 +1,4 @@
-{
+﻿{
   "report_version": "1.0",
   "generated_at": "2026-03-27T13:52:57+09:00",
   "scan_started_at": "2026-03-27T13:52:57+09:00",
@@ -71,7 +71,7 @@
       "enabled": false,
       "brokers": null,
       "topic": "",
-      "client_id": "dmz_webroot_scanner",
+      "client_id": "detectbot",
       "tls": false,
       "sasl_enabled": false,
       "username": "",
@@ -134,8 +134,8 @@
   ],
   "findings": [
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\config\\ui_meanings.yaml",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\config\\ui_meanings.yaml",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\config\\ui_meanings.yaml",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\config\\ui_meanings.yaml",
       "size_bytes": 4935,
       "mod_time": "2026-03-26T08:47:07+09:00",
       "perm": "-rw-rw-rw-",
@@ -215,8 +215,8 @@
       ]
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\samples\\sample_report_web01.json",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\samples\\sample_report_web01.json",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\samples\\sample_report_web01.json",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\samples\\sample_report_web01.json",
       "size_bytes": 3171,
       "mod_time": "2026-03-27T09:19:55+09:00",
       "perm": "-rw-rw-rw-",
@@ -242,8 +242,8 @@
       ]
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\samples\\test.json",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\samples\\test.json",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\samples\\test.json",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\samples\\test.json",
       "size_bytes": 3017,
       "mod_time": "2026-03-27T09:19:55+09:00",
       "perm": "-rw-rw-rw-",
@@ -269,8 +269,8 @@
       ]
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src.zip",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src.zip",
+      "path": "d:\\upload\\detect_bot_1_1_3_src.zip",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src.zip",
       "size_bytes": 370802,
       "mod_time": "2026-03-27T10:48:50+09:00",
       "perm": "-rw-rw-rw-",
@@ -305,8 +305,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\ui.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\ui.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\ui.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\ui.py",
       "size_bytes": 25028,
       "mod_time": "2026-03-27T09:13:44+09:00",
       "perm": "-rw-rw-rw-",
@@ -323,8 +323,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\pages\\scenario_generator.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\pages\\scenario_generator.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\pages\\scenario_generator.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\pages\\scenario_generator.py",
       "size_bytes": 24784,
       "mod_time": "2026-03-23T16:30:58+09:00",
       "perm": "-rw-rw-rw-",
@@ -377,8 +377,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\repository.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\repository.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\repository.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\repository.py",
       "size_bytes": 21187,
       "mod_time": "2026-03-27T09:09:50+09:00",
       "perm": "-rw-rw-rw-",
@@ -395,8 +395,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\pages\\option_generator.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\pages\\option_generator.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\pages\\option_generator.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\pages\\option_generator.py",
       "size_bytes": 20279,
       "mod_time": "2026-03-27T09:17:08+09:00",
       "perm": "-rw-rw-rw-",
@@ -431,8 +431,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\scenario_builder.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\scenario_builder.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\scenario_builder.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\scenario_builder.py",
       "size_bytes": 19771,
       "mod_time": "2026-03-23T16:30:58+09:00",
       "perm": "-rw-rw-rw-",
@@ -449,8 +449,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\pages\\02_scan_results.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\pages\\02_scan_results.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\pages\\02_scan_results.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\pages\\02_scan_results.py",
       "size_bytes": 19538,
       "mod_time": "2026-03-27T09:14:29+09:00",
       "perm": "-rw-rw-rw-",
@@ -503,8 +503,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\pages\\01_server_inventory.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\pages\\01_server_inventory.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\pages\\01_server_inventory.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\pages\\01_server_inventory.py",
       "size_bytes": 15845,
       "mod_time": "2026-03-27T09:14:02+09:00",
       "perm": "-rw-rw-rw-",
@@ -539,8 +539,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\report_parser.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\report_parser.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\report_parser.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\report_parser.py",
       "size_bytes": 12050,
       "mod_time": "2026-03-27T09:15:23+09:00",
       "perm": "-rw-rw-rw-",
@@ -557,8 +557,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\ingest.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\ingest.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\ingest.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\ingest.py",
       "size_bytes": 11943,
       "mod_time": "2026-03-27T09:11:07+09:00",
       "perm": "-rw-rw-rw-",
@@ -593,8 +593,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\utils\\meaning_loader.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\utils\\meaning_loader.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\utils\\meaning_loader.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\utils\\meaning_loader.py",
       "size_bytes": 8477,
       "mod_time": "2026-03-26T08:47:07+09:00",
       "perm": "-rw-rw-rw-",
@@ -629,8 +629,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\pages\\04_policies.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\pages\\04_policies.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\pages\\04_policies.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\pages\\04_policies.py",
       "size_bytes": 6728,
       "mod_time": "2026-03-26T09:40:21+09:00",
       "perm": "-rw-rw-rw-",
@@ -647,8 +647,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\db.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\db.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\db.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\db.py",
       "size_bytes": 6651,
       "mod_time": "2026-03-27T09:09:32+09:00",
       "perm": "-rw-rw-rw-",
@@ -683,8 +683,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\codebook.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\codebook.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\codebook.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\codebook.py",
       "size_bytes": 6612,
       "mod_time": "2026-03-26T09:34:19+09:00",
       "perm": "-rw-rw-rw-",
@@ -701,8 +701,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\pages\\report_parser.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\pages\\report_parser.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\pages\\report_parser.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\pages\\report_parser.py",
       "size_bytes": 6018,
       "mod_time": "2026-03-27T09:16:03+09:00",
       "perm": "-rw-rw-rw-",
@@ -755,8 +755,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\pages\\03_findings.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\pages\\03_findings.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\pages\\03_findings.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\pages\\03_findings.py",
       "size_bytes": 3918,
       "mod_time": "2026-03-26T09:40:21+09:00",
       "perm": "-rw-rw-rw-",
@@ -773,8 +773,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\app.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\app.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\app.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\app.py",
       "size_bytes": 2973,
       "mod_time": "2026-03-23T16:30:58+09:00",
       "perm": "-rw-rw-rw-",
@@ -827,8 +827,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\app.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\app.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\app.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\app.py",
       "size_bytes": 2722,
       "mod_time": "2026-03-26T09:38:46+09:00",
       "perm": "-rw-rw-rw-",
@@ -863,8 +863,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\seed.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\seed.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\seed.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\seed.py",
       "size_bytes": 1613,
       "mod_time": "2026-03-26T09:37:54+09:00",
       "perm": "-rw-rw-rw-",
@@ -881,8 +881,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\models.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\models.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\models.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\models.py",
       "size_bytes": 1032,
       "mod_time": "2026-03-27T09:10:00+09:00",
       "perm": "-rw-rw-rw-",
@@ -917,8 +917,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__init__.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__init__.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__init__.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__init__.py",
       "size_bytes": 157,
       "mod_time": "2026-03-27T09:17:08+09:00",
       "perm": "-rw-rw-rw-",
@@ -935,8 +935,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\utils\\__init__.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\utils\\__init__.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\utils\\__init__.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\utils\\__init__.py",
       "size_bytes": 55,
       "mod_time": "2026-03-26T08:47:07+09:00",
       "perm": "-rw-rw-rw-",
@@ -971,8 +971,8 @@
       "severity": "critical"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__init__.py",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__init__.py",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__init__.py",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__init__.py",
       "size_bytes": 43,
       "mod_time": "2026-03-26T09:34:19+09:00",
       "perm": "-rw-rw-rw-",
@@ -1006,8 +1006,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\ui.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\ui.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\ui.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\ui.cpython-312.pyc",
       "size_bytes": 34712,
       "mod_time": "2026-03-27T10:42:49+09:00",
       "perm": "-rw-rw-rw-",
@@ -1023,8 +1023,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\CHANGES.md",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\CHANGES.md",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\CHANGES.md",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\CHANGES.md",
       "size_bytes": 31036,
       "mod_time": "2026-03-27T10:41:21+09:00",
       "perm": "-rw-rw-rw-",
@@ -1057,8 +1057,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\repository.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\repository.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\repository.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\repository.cpython-312.pyc",
       "size_bytes": 25288,
       "mod_time": "2026-03-27T10:42:49+09:00",
       "perm": "-rw-rw-rw-",
@@ -1074,8 +1074,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\pages\\__pycache__\\option_generator.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\pages\\__pycache__\\option_generator.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\pages\\__pycache__\\option_generator.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\pages\\__pycache__\\option_generator.cpython-312.pyc",
       "size_bytes": 23527,
       "mod_time": "2026-03-27T10:42:49+09:00",
       "perm": "-rw-rw-rw-",
@@ -1091,8 +1091,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\scenario_builder.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\scenario_builder.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\scenario_builder.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\scenario_builder.cpython-312.pyc",
       "size_bytes": 21668,
       "mod_time": "2026-03-27T09:23:46+09:00",
       "perm": "-rw-rw-rw-",
@@ -1125,8 +1125,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\report_parser.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\report_parser.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\report_parser.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\report_parser.cpython-312.pyc",
       "size_bytes": 14551,
       "mod_time": "2026-03-27T10:42:49+09:00",
       "perm": "-rw-rw-rw-",
@@ -1142,8 +1142,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\README.md",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\README.md",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\README.md",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\README.md",
       "size_bytes": 12485,
       "mod_time": "2026-03-27T10:41:10+09:00",
       "perm": "-rw-rw-rw-",
@@ -1159,8 +1159,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\config_builder.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\config_builder.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\config_builder.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\config_builder.cpython-312.pyc",
       "size_bytes": 12288,
       "mod_time": "2026-03-27T09:23:46+09:00",
       "perm": "-rw-rw-rw-",
@@ -1193,8 +1193,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\cmd\\dmz_webroot_scanner\\main.go",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\cmd\\dmz_webroot_scanner\\main.go",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\cmd\\detectbot\\main.go",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\cmd\\detectbot\\main.go",
       "size_bytes": 10935,
       "mod_time": "2026-03-27T10:42:01+09:00",
       "perm": "-rw-rw-rw-",
@@ -1227,8 +1227,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\ingest.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\ingest.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\ingest.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\ingest.cpython-312.pyc",
       "size_bytes": 10004,
       "mod_time": "2026-03-27T10:42:49+09:00",
       "perm": "-rw-rw-rw-",
@@ -1244,8 +1244,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\utils\\__pycache__\\meaning_loader.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\utils\\__pycache__\\meaning_loader.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\utils\\__pycache__\\meaning_loader.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\utils\\__pycache__\\meaning_loader.cpython-312.pyc",
       "size_bytes": 9678,
       "mod_time": "2026-03-27T09:23:46+09:00",
       "perm": "-rw-rw-rw-",
@@ -1261,8 +1261,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\pages\\__pycache__\\report_parser.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\pages\\__pycache__\\report_parser.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\pages\\__pycache__\\report_parser.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\pages\\__pycache__\\report_parser.cpython-312.pyc",
       "size_bytes": 8529,
       "mod_time": "2026-03-27T10:42:49+09:00",
       "perm": "-rw-rw-rw-",
@@ -1295,8 +1295,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\codebook.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\codebook.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\codebook.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\codebook.cpython-312.pyc",
       "size_bytes": 7356,
       "mod_time": "2026-03-27T09:23:46+09:00",
       "perm": "-rw-rw-rw-",
@@ -1329,8 +1329,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\db.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\db.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\db.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\db.cpython-312.pyc",
       "size_bytes": 6782,
       "mod_time": "2026-03-27T10:42:49+09:00",
       "perm": "-rw-rw-rw-",
@@ -1346,8 +1346,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\internal\\systeminfo\\hostinfo.go",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\internal\\systeminfo\\hostinfo.go",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\internal\\systeminfo\\hostinfo.go",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\internal\\systeminfo\\hostinfo.go",
       "size_bytes": 4854,
       "mod_time": "2026-03-27T09:08:01+09:00",
       "perm": "-rw-rw-rw-",
@@ -1363,8 +1363,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\utils.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\utils.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\utils.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\utils.cpython-312.pyc",
       "size_bytes": 4769,
       "mod_time": "2026-03-27T09:23:46+09:00",
       "perm": "-rw-rw-rw-",
@@ -1380,8 +1380,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\presets.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\presets.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\presets.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\presets.cpython-312.pyc",
       "size_bytes": 3166,
       "mod_time": "2026-03-27T09:23:46+09:00",
       "perm": "-rw-rw-rw-",
@@ -1414,8 +1414,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\internal\\report\\kafka.go",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\internal\\report\\kafka.go",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\internal\\report\\kafka.go",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\internal\\report\\kafka.go",
       "size_bytes": 2836,
       "mod_time": "2026-03-27T09:22:43+09:00",
       "perm": "-rw-rw-rw-",
@@ -1431,8 +1431,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\constants.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\constants.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\constants.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\constants.cpython-312.pyc",
       "size_bytes": 2221,
       "mod_time": "2026-03-27T09:23:46+09:00",
       "perm": "-rw-rw-rw-",
@@ -1448,8 +1448,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\internal\\report\\model.go",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\internal\\report\\model.go",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\internal\\report\\model.go",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\internal\\report\\model.go",
       "size_bytes": 1917,
       "mod_time": "2026-03-27T09:08:15+09:00",
       "perm": "-rw-rw-rw-",
@@ -1482,8 +1482,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\seed.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\seed.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\seed.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\seed.cpython-312.pyc",
       "size_bytes": 1836,
       "mod_time": "2026-03-27T09:23:46+09:00",
       "perm": "-rw-rw-rw-",
@@ -1499,8 +1499,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\internal\\systeminfo\\hostinfo_test.go",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\internal\\systeminfo\\hostinfo_test.go",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\internal\\systeminfo\\hostinfo_test.go",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\internal\\systeminfo\\hostinfo_test.go",
       "size_bytes": 1248,
       "mod_time": "2026-03-27T09:08:01+09:00",
       "perm": "-rw-rw-rw-",
@@ -1516,8 +1516,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\internal\\consolelog\\logger.go",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\internal\\consolelog\\logger.go",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\internal\\consolelog\\logger.go",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\internal\\consolelog\\logger.go",
       "size_bytes": 1116,
       "mod_time": "2026-03-27T10:39:01+09:00",
       "perm": "-rw-rw-rw-",
@@ -1550,8 +1550,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\models.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\models.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\models.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\models.cpython-312.pyc",
       "size_bytes": 1086,
       "mod_time": "2026-03-27T10:42:49+09:00",
       "perm": "-rw-rw-rw-",
@@ -1584,8 +1584,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\README.md",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\README.md",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\README.md",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\README.md",
       "size_bytes": 1004,
       "mod_time": "2026-03-26T09:40:21+09:00",
       "perm": "-rw-rw-rw-",
@@ -1601,8 +1601,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\__init__.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\streamlit_app\\lib\\__pycache__\\__init__.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\__init__.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\streamlit_app\\lib\\__pycache__\\__init__.cpython-312.pyc",
       "size_bytes": 338,
       "mod_time": "2026-03-27T10:42:49+09:00",
       "perm": "-rw-rw-rw-",
@@ -1635,8 +1635,8 @@
       "severity": "high"
     },
     {
-      "path": "d:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\__init__.cpython-312.pyc",
-      "real_path": "D:\\upload\\dmz_webroot_scanner_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\__init__.cpython-312.pyc",
+      "path": "d:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\__init__.cpython-312.pyc",
+      "real_path": "D:\\upload\\detect_bot_1_1_3_src\\detectbot_portal\\lib\\__pycache__\\__init__.cpython-312.pyc",
       "size_bytes": 225,
       "mod_time": "2026-03-27T09:23:46+09:00",
       "perm": "-rw-rw-rw-",
@@ -1658,3 +1658,4 @@
     "findings_count": 82
   }
 }
+

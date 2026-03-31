@@ -185,12 +185,12 @@ func TestScanArgValueSupportsBothForms(t *testing.T) {
 	orig := os.Args
 	t.Cleanup(func() { os.Args = orig })
 
-	os.Args = []string{"dmz_webroot_scanner", "--config", "sample_config.yaml"}
+	os.Args = []string{"detectbot", "--config", "sample_config.yaml"}
 	if got := scanArgValue("--config"); got != "sample_config.yaml" {
 		t.Fatalf("space-separated form failed: %q", got)
 	}
 
-	os.Args = []string{"dmz_webroot_scanner", "--config=sample_config.json"}
+	os.Args = []string{"detectbot", "--config=sample_config.json"}
 	if got := scanArgValue("--config"); got != "sample_config.json" {
 		t.Fatalf("equals form failed: %q", got)
 	}

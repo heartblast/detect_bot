@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/heartblast/dmz_webroot_scanner/internal/model"
+	"github.com/heartblast/detect_bot/internal/model"
 )
 
 // PIIPatternsRule: 파일 본문에서 개인정보(PII) 유출위험 패턴을 탐지

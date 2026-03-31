@@ -31,7 +31,7 @@ and granular rule control.
   * Added mergeStringSlices() helper
   * Supports YAML (gopkg.in/yaml.v3) and JSON (encoding/json)
 
-- cmd/dmz_webroot_scanner/main.go
+- cmd/detectbot/main.go
   * Separated makeRuleSet() factory for rule composition
   * Added validateInputCombination() for input validation
   * Added printFlagGroup() for organized help

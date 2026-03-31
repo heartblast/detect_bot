@@ -1,4 +1,4 @@
-# Example configuration for dmz_webroot_scanner
+# Example configuration for detectbot
 preset: balanced
 server_type: nginx
 nginx_dump: -
@@ -39,14 +39,14 @@ pii_context_keywords: true
 pii_exts:
   - .yaml
   - .json
-out: /var/log/dmz_webroot_scanner/sample-report.json
+out: /var/log/detectbot/sample-report.json
 kafka:
   enabled: true
   brokers:
     - broker1:9092
     - broker2:9092
   topic: dmz.scan.findings
-  client_id: dmz_scanner
+  client_id: detectbot
   tls: true
   sasl_enabled: false
   username: scanner

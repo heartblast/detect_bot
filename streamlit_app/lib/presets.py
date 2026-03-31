@@ -1,5 +1,5 @@
 """
-Preset configurations for DMZ Webroot Scanner
+Preset configurations for Detect Bot
 """
 
 from lib.constants import (
@@ -40,7 +40,7 @@ PRESETS = {
         "kafka_enabled": False,
         "kafka_brokers": "",
         "kafka_topic": "",
-        "kafka_client_id": "dmz_webroot_scanner",
+        "kafka_client_id": "detectbot",
         "kafka_tls": False,
         "kafka_sasl_enabled": False,
         "kafka_username": "",
@@ -77,7 +77,7 @@ PRESETS = {
         "kafka_enabled": False,
         "kafka_brokers": "",
         "kafka_topic": "",
-        "kafka_client_id": "dmz_webroot_scanner",
+        "kafka_client_id": "detectbot",
         "kafka_tls": False,
         "kafka_sasl_enabled": False,
         "kafka_username": "",
@@ -114,7 +114,7 @@ PRESETS = {
         "kafka_enabled": False,
         "kafka_brokers": "",
         "kafka_topic": "",
-        "kafka_client_id": "dmz_webroot_scanner",
+        "kafka_client_id": "detectbot",
         "kafka_tls": False,
         "kafka_sasl_enabled": False,
         "kafka_username": "",

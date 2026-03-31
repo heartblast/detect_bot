@@ -3,7 +3,7 @@ package scan
 import (
 	"time"
 
-	"github.com/heartblast/dmz_webroot_scanner/internal/root"
+	"github.com/heartblast/detect_bot/internal/root"
 )
 
 // FileCtx: 파일 스캐닝 동안 수집된 파일 메타데이터를 저장하는 구조체
