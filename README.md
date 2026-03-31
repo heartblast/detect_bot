@@ -107,6 +107,9 @@
 
 ## 설치 및 빌드
 
+- Build/CI toolchain: Go 1.26.1
+- `go.mod` language version: Go 1.25.0
+
 ### 로컬 빌드
 
 ```bash
@@ -469,5 +472,6 @@ CLI 스캐너의 핵심 실행 파일은 `cmd/detectbot`입니다.
 
 ```bash
 go test ./...
+go vet ./...
 go build ./cmd/detectbot
 ```
