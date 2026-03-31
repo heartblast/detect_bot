@@ -1,136 +1,111 @@
-DMZ 구간 웹서버의 웹서빙 경로(root/alias/DocumentRoot) 를 웹서버 설정 “덤프 출력”에서 자동 수집하고, 해당 경로를 스캔하여 용도 부적합 파일(스테이징/반출 징후, 웹쉘/스크립트/아카이브 등) 을 룰 기반으로 탐지한 뒤 표준 JSON 보고서로 산출하는 경량 도구입니다.
+# Detect Bot
 
-**현재 버전: v1.1.3**
+`Detect Bot`은 DMZ 구간 웹서버에서 웹서빙 경로를 수집하고, 해당 경로 아래 파일을 스캔해 웹 노출에 부적절한 파일이나 민감정보 흔적을 JSON 리포트로 남기는 Go 기반 점검 도구입니다.
 
-실행 시 `NICE DetectBot` ASCII 배너가 stderr로 출력되며, 바로 아래에 버전 정보(예: `Version: v1.1.3`)가 표시됩니다. 배너는 `internal/banner/nice_detectbot.txt`에 템플릿으로 보관되며, Go `embed`로 컴파일 시 바이너리에 포함되어 별도 파일 의존성이 없습니다.
+현재 저장소 모듈 경로는 `github.com/heartblast/detect_bot`입니다.
 
-> 목적은 침해 지원이 아닌 통제/탐지/감사입니다.  
-> MIME 판별은 `net/http.DetectContentType`(최대 512B sniff) 기반이라 100% 정확하지 않습니다.
+## 무엇을 하는가
 
----
+- `nginx -T` 출력에서 `root`, `alias` 경로를 추출합니다.
+- `apachectl -S` 출력에서 `DocumentRoot` 경로를 추출합니다.
+- `--watch-dir`로 수동 스캔 경로를 추가할 수 있습니다.
+- 수집한 루트 경로를 순회하며 파일 메타데이터와 일부 콘텐츠를 검사합니다.
+- 결과를 JSON 리포트로 저장하거나 stdout으로 출력할 수 있습니다.
+- 선택적으로 Kafka에 요약 이벤트를 전송할 수 있습니다.
 
-## 주요 기능
+## 현재 구현 기준 주요 기능
 
-### 1. 웹서빙 경로 자동 수집
+### 1. 웹 루트 수집
 
-* **Nginx**
+- Nginx: `root`, `alias`
+- Apache: `DocumentRoot`
+- Manual: `--watch-dir`
 
-  * `nginx -T` 출력에서 `root`, `alias` 경로 추출
-* **Apache**
+수집된 루트는 정규화되며, 가능한 경우 symlink 실제 경로도 함께 기록됩니다.
 
-  * `apachectl -S` 출력에서 `DocumentRoot` 추출
-* **수동 보강**
+### 2. 파일 시스템 스캔
 
-  * `--watch-dir` 로 추가 감시 경로 지정 가능
-* **서버 유형 명시**
+현재 스캔 시 다음 제어가 지원됩니다.
 
-  * `--server-type nginx|apache|manual` 지원 
+- `--max-depth`: 재귀 깊이 제한
+- `--exclude`: 제외 경로 prefix
+- `--newer-than-h`: 최근 N시간 내 수정 파일만 평가
+- `--workers`: 병렬 스캔 워커 수
+- `--follow-symlink`: symlink/reparse point 추적 여부
+- `--max-size-mb`: MIME sniff/향후 해시 대상 파일의 최대 크기 제한
 
-### 2. 웹루트 파일 스캔
+### 3. 기본 룰
 
-수집된 경로를 기준으로 실제 파일 시스템을 순회하며 다음 유형을 탐지합니다.
+현재 코드에서 기본 활성화되는 룰은 아래 4개입니다.
 
-* 허용 MIME allowlist 위반
-* 허용 확장자 allowlist 위반
-* 고위험 확장자 탐지
-* 확장자–MIME 불일치
-* 대용량 파일 탐지
-* 최근 변경 파일 중심 점검(`--newer-than-h`) 
+- `allowlist`
+- `high_risk_ext`
+- `large_file`
+- `ext_mime_mismatch`
 
-### 3. 민감정보 콘텐츠 스캔
+각 룰이 만들어내는 대표 reason 코드는 다음과 같습니다.
 
-텍스트 기반 설정/구성 파일을 선택적으로 본문 스캔합니다.
+- `mime_not_in_allowlist`
+- `ext_not_in_allowlist`
+- `high_risk_extension`
+- `large_file_in_web_path`
+- `ext_mime_mismatch_image`
+- `ext_mime_mismatch_archive`
 
-주요 대상 예:
+### 4. 콘텐츠 기반 민감정보 탐지
 
-* `.yaml`, `.yml`, `.json`, `.xml`
-* `.properties`, `.conf`, `.env`, `.ini`
-* `.txt`, `.config`, `.cfg`, `.toml`
+`--content-scan`을 켜면 텍스트 계열 파일 샘플을 읽어 아래 범주의 패턴을 탐지합니다.
 
-주요 탐지 예:
+- DB/서비스 연결 문자열
+- 비밀번호/토큰/API 키 등 자격증명
+- private key 블록
+- 내부망 IP / 내부 도메인
+- 위험 조합 패턴
 
-* JDBC / Redis / MongoDB / PostgreSQL / LDAP 연결 문자열
-* password / token / api_key / secret 계열 키
-* 비공개 키 / 자격증명 흔적
-* 조합형 고위험 패턴
+대표 매칭 코드 예시:
 
-리포트에는 원문 대신 마스킹된 증거만 남기도록 사용하는 것을 권장합니다. 콘텐츠 스캔은 `--content-scan`, `--content-max-bytes`, `--content-max-size-kb`, `--content-ext` 옵션으로 제어됩니다. 
+- `connection_jdbc_url`
+- `connection_redis_uri`
+- `connection_mongodb_uri`
+- `credential_password`
+- `credential_api_key`
+- `private_key_rsa`
+- `internal_endpoint_private_ip`
+- `combo_jdbc_with_credentials`
 
-### 4. 개인정보(PII) 패턴 탐지
+### 5. PII 탐지
 
-텍스트 파일 본문에서 개인정보 유출 위험 패턴을 선택적으로 탐지합니다.
+`--pii-scan`을 켜면 개인정보 패턴을 탐지합니다.
 
-대상 예:
+- 주민등록번호
+- 외국인등록번호
+- 여권번호
+- 운전면허번호
+- 카드번호
+- 계좌번호
+- 휴대전화번호
+- 이메일
 
-* 주민등록번호
-* 외국인등록번호
-* 여권번호
-* 운전면허번호
-* 카드번호
-* 계좌번호
-* 휴대전화번호
-* 이메일 주소
+대표 매칭 코드 예시:
 
-지원 옵션 예:
+- `resident_registration_number`
+- `foreigner_registration_number`
+- `passport_number`
+- `drivers_license`
+- `credit_card`
+- `bank_account`
+- `mobile_phone`
+- `email`
 
-* `--pii-scan`
-* `--pii-ext`
-* `--pii-max-bytes`
-* `--pii-max-size-kb`
-* `--pii-max-matches`
-* `--pii-mask`
-* `--pii-store-sample`
-* `--pii-context-keywords` 
+## 제한사항
 
-### 5. 운영 영향 최소화 옵션
+- MIME 판별은 `net/http.DetectContentType` 기반의 샘플 sniff 방식입니다.
+- 콘텐츠/PII 스캔은 파일 전체가 아니라 제한된 샘플만 읽습니다.
+- `--hash` 플래그와 `sha256` 필드는 존재하지만, 현재 구현에서는 `sha256` 값이 실제로 채워지지 않습니다.
+- Kafka의 SASL은 플래그와 설정은 있으나 현재는 stub 상태이며 실제 인증 로직은 구현되어 있지 않습니다.
+- Kafka TLS는 `InsecureSkipVerify: true`로 동작합니다.
 
-* `--newer-than-h` : 최근 변경 파일 위주 점검
-* `--max-depth` : 재귀 깊이 제한
-* `--exclude` : 제외 경로 지정
-* `--workers` : 스캔 워커 수 조정
-* `--hash` : 필요 시에만 SHA-256 계산
-* `--max-size-mb` : MIME sniff / 해시 계산 대상 최대 크기 제한
-* `--follow-symlink` : 심볼릭 링크 추적 여부 제어 
-
-### 6. 프리셋 / 룰 세부 제어
-
-* 프리셋: `safe`, `balanced`, `deep`, `handover`, `offboarding`
-* 룰 개별 제어:
-
-  * `--enable-rules`
-  * `--disable-rules`
-
-### 7. Kafka 연계
-
-결과를 로컬 JSON으로 남기면서, 선택적으로 요약 이벤트를 Kafka로 전송할 수 있습니다.
-
-지원 옵션:
-
-* `--kafka-enabled`
-* `--kafka-brokers`
-* `--kafka-topic`
-* `--kafka-client-id`
-* `--kafka-tls`
-* `--kafka-sasl-enabled`
-* `--kafka-username`
-* `--kafka-password-env`
-* `--kafka-mask-sensitive` 
-
-### 8. Streamlit 리포트 해석기
-
-`streamlit_app/` 아래 리포트 파서 UI에서 JSON 결과를 업로드해 다음을 확인할 수 있습니다.
-
-* 리포트 기본 정보
-* 추출된 웹서빙 경로
-* 탐지 결과 목록
-* 탐지 항목 상세 해석
-* 실행 설정
-* 원본 JSON
-* 스캔 시작 시각(`scan_started_at`)
-
----
-
-## 설치 / 빌드
+## 설치 및 빌드
 
 ### 로컬 빌드
 
@@ -138,208 +113,168 @@ DMZ 구간 웹서버의 웹서빙 경로(root/alias/DocumentRoot) 를 웹서버 
 go build -o detectbot ./cmd/detectbot
 ```
 
-### Windows PowerShell 예시
+### Windows PowerShell
 
 ```powershell
 go build -o detectbot.exe .\cmd\detectbot
 ```
 
-### Linux 크로스 빌드 예시
+### 배포용 빌드 스크립트
 
-```powershell
-$env:GOOS="linux"
-$env:GOARCH="amd64"
-go build -trimpath -ldflags "-s -w" -o dist/detectbot ./cmd/detectbot
-```
+리포지토리에는 아래 스크립트가 포함되어 있습니다.
 
----
+- `build.sh`
+- `build.ps1`
 
-## 사용 예시
+`build.sh` 기준 산출물 예:
 
-### 1) Nginx 덤프 입력 + 스캔
+- `dist/detectbot_windows_amd64_v1_1_3.exe`
+- `dist/detectbot_linux_amd64_v1_1_3`
+- `dist/detectbot_darwin_amd64_v1_1_3`
+- `dist/detectbot_darwin_arm64_v1_1_3`
+
+## 빠른 사용 예시
+
+### Nginx dump 기반
 
 ```bash
 nginx -T 2>&1 | ./detectbot \
   --server-type nginx \
   --nginx-dump - \
   --scan \
-  --newer-than-h 24 \
-  --max-depth 10 \
-  --exclude /var/cache \
-  --out /var/log/detectbot/report-$(date +%F).json
+  --out /tmp/report.json
 ```
 
-### 2) Apache 덤프 입력 + 스캔
+### Apache dump 기반
 
 ```bash
 apachectl -S 2>&1 | ./detectbot \
   --server-type apache \
   --apache-dump - \
   --scan \
-  --newer-than-h 24 \
-  --max-depth 10 \
-  --out /var/log/detectbot/report-$(date +%F).json
+  --out /tmp/report.json
 ```
 
-> Apache 환경에서는 `apachectl -S` 출력에 `DocumentRoot`가 보이지 않으면 roots가 비어 있을 수 있습니다.
-> 이런 경우 `--watch-dir`로 실제 웹루트/업로드 경로를 함께 지정하는 것이 좋습니다. ([GitHub][3])
-
-### 3) 수동 경로 기반 스캔
+### 수동 경로 기반
 
 ```bash
 ./detectbot \
   --server-type manual \
   --watch-dir /var/www/html \
-  --watch-dir /data/upload \
+  --watch-dir /srv/uploads \
   --scan \
-  --newer-than-h 24 \
-  --max-depth 8 \
   --out /tmp/report.json
 ```
 
-### 4) 콘텐츠 스캔 활성화
+### 콘텐츠 스캔 포함
 
 ```bash
-nginx -T 2>&1 | ./detectbot \
-  --nginx-dump - \
+./detectbot \
+  --server-type manual \
+  --watch-dir /var/www/html \
   --scan \
   --content-scan \
-  --content-max-bytes 65536 \
-  --content-max-size-kb 1024 \
   --content-ext .yaml \
-  --content-ext .yml \
-  --content-ext .json \
   --content-ext .env \
   --out /tmp/report-content.json
 ```
 
-### 5) PII 탐지 활성화
+### PII 스캔 포함
 
 ```bash
-nginx -T 2>&1 | ./detectbot \
-  --nginx-dump - \
+./detectbot \
+  --server-type manual \
+  --watch-dir /var/www/html \
   --scan \
   --pii-scan \
-  --pii-max-bytes 65536 \
-  --pii-max-size-kb 256 \
-  --pii-ext .yaml \
   --pii-ext .json \
   --pii-ext .txt \
-  --pii-ext .log \
   --pii-mask \
   --pii-store-sample \
-  --pii-context-keywords \
   --out /tmp/report-pii.json
 ```
 
-### 6) 해시 포함
-
-```bash
-nginx -T 2>&1 | ./detectbot \
-  --nginx-dump - \
-  --scan \
-  --hash \
-  --max-size-mb 100 \
-  --out /tmp/report-hash.json
-```
-
-### 7) 룰 개별 제어
-
-```bash
-./detectbot \
-  --watch-dir /var/www/html \
-  --scan \
-  --disable-rules large_file \
-  --enable-rules high_risk_extension \
-  --out /tmp/report.json
-```
-
-### 8) Kafka 전송 활성화
-
-```bash
-./detectbot \
-  --watch-dir /var/www/html \
-  --scan \
-  --kafka-enabled \
-  --kafka-brokers broker1:9092,broker2:9092 \
-  --kafka-topic dmz.scan.findings \
-  --kafka-client-id detectbot \
-  --kafka-tls \
-  --kafka-mask-sensitive \
-  --out /tmp/report.json
-```
-
----
-
-## 주요 옵션
+## CLI 옵션
 
 ### 입력 옵션
 
-* `--server-type`
-* `--nginx-dump`
-* `--apache-dump`
-* `--watch-dir`
-* `--config`
+- `--server-type nginx|apache|manual`
+- `--nginx-dump <path|- >`
+- `--apache-dump <path|- >`
+- `--watch-dir <path>` 반복 가능
+- `--config <yaml|json>`
 
-### 스캔 / 범위 옵션
+### 스캔 옵션
 
-* `--scan`
-* `--exclude`
-* `--max-depth`
-* `--newer-than-h`
-* `--workers`
-* `--hash`
-* `--max-size-mb`
-* `--follow-symlink`
+- `--scan`
+- `--exclude <path>` 반복 가능
+- `--max-depth <n>`
+- `--newer-than-h <hours>`
+- `--workers <n>`
+- `--hash`
+- `--max-size-mb <n>`
+- `--follow-symlink`
 
-### 정책 / 룰 옵션
+### 정책/룰 옵션
 
-* `--allow-mime-prefix`
-* `--allow-ext`
-* `--enable-rules`
-* `--disable-rules`
-* `--preset`
+- `--allow-mime-prefix <prefix>` 반복 가능
+- `--allow-ext <ext>` 반복 가능
+- `--enable-rules <name>` 반복 가능 또는 comma-separated
+- `--disable-rules <name>` 반복 가능 또는 comma-separated
+- `--preset safe|balanced|deep|handover|offboarding`
 
 ### 콘텐츠 스캔 옵션
 
-* `--content-scan`
-* `--content-max-bytes`
-* `--content-max-size-kb`
-* `--content-ext`
+- `--content-scan`
+- `--content-max-bytes <n>`
+- `--content-max-size-kb <n>`
+- `--content-ext <ext>` 반복 가능
 
 ### PII 스캔 옵션
 
-* `--pii-scan`
-* `--pii-ext`
-* `--pii-max-size-kb`
-* `--pii-max-bytes`
-* `--pii-max-matches`
-* `--pii-mask`
-* `--pii-store-sample`
-* `--pii-context-keywords`
+- `--pii-scan`
+- `--pii-ext <ext>` 반복 가능
+- `--pii-max-size-kb <n>`
+- `--pii-max-bytes <n>`
+- `--pii-max-matches <n>`
+- `--pii-mask`
+- `--pii-store-sample`
+- `--pii-context-keywords`
 
 ### 출력 옵션
 
-* `--out`
+- `--out <path|->`
 
 ### Kafka 옵션
 
-* `--kafka-enabled`
-* `--kafka-brokers`
-* `--kafka-topic`
-* `--kafka-client-id`
-* `--kafka-tls`
-* `--kafka-sasl-enabled`
-* `--kafka-username`
-* `--kafka-password-env`
-* `--kafka-mask-sensitive` 
+- `--kafka-enabled`
+- `--kafka-brokers <a,b,c>`
+- `--kafka-topic <topic>`
+- `--kafka-client-id <id>`
+- `--kafka-tls`
+- `--kafka-sasl-enabled`
+- `--kafka-username <user>`
+- `--kafka-password-env <env>`
+- `--kafka-mask-sensitive`
 
----
+## 설정 파일
 
-## 설정 파일(`--config`) 사용
+`--config`로 YAML 또는 JSON 설정 파일을 읽을 수 있습니다.
 
-현재 `Config` 구조체에는 YAML/JSON 태그가 부여되어 있고, `CHANGES.md` 기준으로는 `snake_case` 설정 키와 Streamlit 스타일 키 호환도 보완된 상태로 정리되어 있습니다.
-즉, 현재 문서에는 `--config`를 정식 사용 예시로 포함해도 됩니다. ([GitHub][4])
+지원 포맷:
+
+- `.yaml`
+- `.yml`
+- `.json`
+
+CLI에서 명시한 값이 설정 파일보다 우선합니다.
+
+호환 alias도 일부 지원합니다.
+
+- `watch_dir` -> `watch_dirs`
+- `content_ext` -> `content_exts`
+- `pii_ext` -> `pii_exts`
+- `output` -> `out`
 
 ### YAML 예시
 
@@ -353,28 +288,26 @@ watch_dirs:
   - /var/www/html
 
 exclude:
-  - /var/www/html/cache
+  - /var/cache
 
-max_depth: 8
+max_depth: 12
+max_size_mb: 100
 newer_than_h: 24
 workers: 4
 hash: false
 follow_symlink: false
 
 allow_mime_prefix:
-  - text/
+  - text/html
+  - application/json
   - image/
-  - application/javascript
 
 allow_ext:
   - .html
   - .css
   - .js
-  - .png
-  - .jpg
   - .json
-
-preset: balanced
+  - .png
 
 content_scan: true
 content_max_bytes: 65536
@@ -388,13 +321,12 @@ content_exts:
 pii_scan: true
 pii_max_bytes: 65536
 pii_max_size_kb: 256
-pii_max_matches: 20
+pii_max_matches: 5
 pii_mask: true
 pii_store_sample: true
 pii_context_keywords: true
 pii_exts:
   - .txt
-  - .log
   - .json
 
 kafka:
@@ -410,104 +342,132 @@ kafka:
   mask_sensitive: true
 ```
 
-실행 예시:
+## 출력 형식
 
-```bash
-nginx -T 2>&1 | ./detectbot --config sample_config.yaml
-```
+리포트는 pretty JSON으로 저장됩니다.
 
-CLI로 명시한 값은 설정 파일 값보다 우선하는 방식으로 사용하는 것이 맞습니다.
+최상위 필드:
 
----
+- `report_version`
+- `generated_at`
+- `scan_started_at`
+- `host`
+- `inputs`
+- `config`
+- `active_rules`
+- `roots`
+- `findings`
+- `stats`
 
-## Console Output Example
-
-실행 시 배너만 출력되는 것이 아니라 시작, 진행, 완료, 요약 로그가 함께 출력됩니다. 운영자는 배치 로그만 보더라도 실행 시작 여부, 대상 추출 여부, 정상 완료 여부를 빠르게 판단할 수 있습니다.
-
-```text
-Version: v1.1.3
-[INFO] Scan started at: 2026-03-27T09:15:00+09:00
-[INFO] Host: web-dmz-01 (10.10.10.25, linux)
-[INFO] Mode: nginx-dump + scan
-[INFO] Output file: /tmp/report.json
-[INFO] Targets discovered: 4
-[INFO] Starting filesystem scan...
-[INFO] Scanning root: /var/www/html
-[INFO] Scanning root: /srv/www/app
-[INFO] Scan completed at: 2026-03-27T09:16:42+09:00
-[INFO] Duration: 1m42s
-[INFO] Scan roots: 4
-[INFO] Findings: 12
-[SUMMARY] roots=4 files_scanned=1823 findings=12 high_risk=3 large_files=2 allowlist_violations=7
-[INFO] Report written to: /tmp/report.json
-```
-
-콘솔 로그는 실행 상태 확인용이고, 상세 탐지 증적은 JSON 리포트에서 확인하는 구조입니다. `--out -` 로 JSON을 stdout에 내보낼 때는 콘솔 로그가 stderr로 우회되어 출력 결과와 충돌하지 않습니다.
-
-## JSON 리포트 구조
-
-최상위 구조 예시:
+### `host` 예시
 
 ```json
 {
-  "report_version": "1.0",
-  "generated_at": "2026-03-20T10:00:00+09:00",
-  "scan_started_at": "2026-03-20T09:59:58+09:00",
-  "host": {
-    "hostname": "web-dmz-01",
-    "ip_addresses": [
-      "10.10.10.25"
-    ],
-    "primary_ip": "10.10.10.25",
-    "os_type": "linux",
-    "os_name": "Rocky Linux",
-    "os_version": "8.10",
-    "platform": "linux/amd64",
-    "collected_at": "2026-03-20T09:59:58+09:00"
-  },
-  "inputs": [
-    "nginx-dump:-"
-  ],
-  "config": {},
-  "active_rules": [
-    "allowlist",
-    "high_risk_extension",
-    "large_file",
-    "ext_mime_mismatch"
-  ],
-  "roots": [],
-  "findings": [],
-  "stats": {
-    "roots_count": 0,
-    "scanned_files": 0,
-    "findings_count": 0
-  }
+  "hostname": "web-dmz-01",
+  "ip_addresses": ["10.10.10.25"],
+  "primary_ip": "10.10.10.25",
+  "os_type": "linux",
+  "os_name": "Rocky Linux",
+  "os_version": "8.10",
+  "platform": "linux/amd64",
+  "collected_at": "2026-03-31T10:00:00+09:00"
 }
 ```
 
-`host.hostname`, `host.primary_ip`, `host.os_type` 는 운영자가 리포트만 보더라도 어느 서버 결과인지 즉시 식별하기 위한 핵심 필드입니다. Streamlit 리포트 파서와 DetectBot Portal 목록/상세 화면에서도 같은 정보를 함께 표시합니다.
+### `roots` 예시
 
-### finding 예시
+```json
+[
+  {
+    "path": "/var/www/html",
+    "real_path": "/srv/www/html",
+    "source": "nginx.root",
+    "context_hint": "/etc/nginx/nginx.conf:42 | server_name=example.com"
+  }
+]
+```
+
+### `finding` 예시
 
 ```json
 {
   "path": "/var/www/html/.env",
-  "real_path": "/var/www/html/.env",
+  "real_path": "/srv/www/html/.env",
   "size_bytes": 4096,
-  "mod_time": "2026-03-20T09:40:00+09:00",
+  "mod_time": "2026-03-31T09:30:00+09:00",
   "perm": "-rw-r--r--",
   "ext": ".env",
   "mime_sniff": "text/plain; charset=utf-8",
   "reasons": [
     "ext_not_in_allowlist",
-    "secret_patterns"
+    "credential_password"
   ],
-  "severity": "high"
+  "severity": "critical",
+  "matched_patterns": [
+    "credential_password"
+  ],
+  "evidence_masked": [
+    "password=***"
+  ],
+  "content_flags": "truncated",
+  "root_matched": "/var/www/html",
+  "root_source": "manual",
+  "url_exposure_heuristic": "potentially_web_reachable"
 }
 ```
 
-Manual verification checklist:
-1. Run with only a YAML config file.
-2. Run with only a JSON config file.
-3. Run with `--config` plus a few CLI overrides such as `--workers` or `--watch-dir`.
-4. Run without `--config` and confirm existing CLI-only behavior is unchanged.
+## Kafka 전송
+
+Kafka를 켜면 전체 리포트가 아니라 요약 이벤트가 전송됩니다.
+
+현재 이벤트에는 아래 정보가 포함됩니다.
+
+- `host`
+- `generated_at`
+- `roots_count`
+- `findings[].path`
+- `findings[].severity`
+- `findings[].reasons`
+
+`--kafka-mask-sensitive`가 켜져 있으면 Kafka 이벤트의 경로는 파일명만 남기고 마스킹됩니다.
+
+## 실행 시 로그
+
+실행 중 콘솔에는 stderr로 진행 로그가 출력됩니다.
+
+예:
+
+```text
+Version: v1.1.3
+[INFO] Scan started at: 2026-03-31T10:00:00+09:00
+[INFO] Host: web-dmz-01 (10.10.10.25, linux)
+[INFO] Mode: nginx-dump + scan
+[INFO] Output file: /tmp/report.json
+[INFO] Targets discovered: 3
+[INFO] Starting filesystem scan...
+[INFO] Scanning root: /var/www/html
+[INFO] Scan completed at: 2026-03-31T10:00:08+09:00
+[INFO] Duration: 8s
+[INFO] Scan roots: 3
+[INFO] Findings: 7
+[SUMMARY] roots=3 files_scanned=812 findings=7 high_risk=1 large_files=2 allowlist_violations=4
+[INFO] Report written to: /tmp/report.json
+```
+
+`--out -`를 사용하면 JSON은 stdout으로, 로그는 stderr로 분리됩니다.
+
+## 보조 UI
+
+이 저장소에는 보조 UI도 포함되어 있습니다.
+
+- `streamlit_app/`: 옵션 생성과 리포트 해석용 Streamlit UI
+- `detectbot_portal/`: 리포트 적재/조회 중심 포털 UI
+
+CLI 스캐너의 핵심 실행 파일은 `cmd/detectbot`입니다.
+
+## 검증 명령
+
+```bash
+go test ./...
+go build ./cmd/detectbot
+```
