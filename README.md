@@ -477,3 +477,8 @@ go test ./...
 go vet ./...
 go build ./cmd/detectbot
 ```
+
+The Detect Bot logo is based on the Go gopher, originally designed by Renée French.
+The original design is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+Source: https://go.dev/wiki/Gopher
+Changes were made for this project.
