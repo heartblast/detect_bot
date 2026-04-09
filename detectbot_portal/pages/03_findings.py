@@ -6,6 +6,7 @@ import streamlit as st
 from bootstrap import bootstrap_portal
 from config.settings import load_settings
 from lib.navigation import render_portal_sidebar
+from lib.time_utils import format_display_datetime
 from lib.ui import dataframe_or_info, format_timestamp_columns, render_portal_header
 from services.scan_service import ScanService
 from services.server_service import ServerService
@@ -256,8 +257,8 @@ def render_selected_finding_summary(detail: dict) -> None:
     st.write(f"**실제 경로**: {detail.get('real_path') or '-'}")
     st.write(f"**사유**: {detail.get('reason_meanings') or detail.get('reason_codes') or '-'}")
     st.write(f"**패턴**: {detail.get('pattern_meanings') or detail.get('pattern_codes') or '-'}")
-    st.write(f"**탐지이력 시각**: {detail.get('generated_at') or '-'}")
-    st.write(f"**수정 시각**: {detail.get('mod_time') or '-'}")
+    st.write(f"**탐지이력 시각**: {format_display_datetime(detail.get('generated_at'))}")
+    st.write(f"**수정 시각**: {format_display_datetime(detail.get('mod_time'))}")
 
 
 render_portal_header(

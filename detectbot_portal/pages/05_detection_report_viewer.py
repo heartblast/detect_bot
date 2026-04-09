@@ -154,6 +154,8 @@ render_portal_header(
     "서버와 스캔 실행 이력을 선택한 뒤, 저장된 리포트의 요약과 상세 Findings를 운영자 화면에서 확인합니다.",
 )
 
+st.caption("All displayed timestamps use KST (Asia/Seoul).")
+
 focus_applied = _apply_focus_from_other_pages()
 
 servers_df = server_service.list_servers_df(active_only=False)
@@ -247,6 +249,8 @@ with st.expander("리포트 기본 정보", expanded=True):
         st.write(f"**server_name**: {run_meta.get('server_name') or '-'}")
         st.write(f"**file_name**: {run_meta.get('file_name') or '-'}")
         st.write(f"**stored_path**: {run_meta.get('stored_path') or '-'}")
+        st.write(f"**uploaded_at**: {fmt_dt(run_meta.get('uploaded_at'))}")
+        st.write(f"**created_at**: {fmt_dt(run_meta.get('created_at'))}")
         st.write(f"**roots_count**: {stats.get('roots_count', run_meta.get('roots_count', 0))}")
         st.write(f"**scanned_files**: {stats.get('scanned_files', run_meta.get('scanned_files', '-'))}")
         st.write(f"**findings_count**: {stats.get('findings_count', run_meta.get('findings_count', len(findings)))}")

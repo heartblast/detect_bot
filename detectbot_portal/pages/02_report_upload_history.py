@@ -7,6 +7,7 @@ from bootstrap import bootstrap_portal
 from config.settings import load_settings
 from lib.models import INPUT_TYPES
 from lib.navigation import render_portal_sidebar
+from lib.time_utils import format_display_datetime
 from lib.ui import dataframe_or_info, format_timestamp_columns, inject_portal_css, render_portal_header
 from services.policy_service import PolicyService
 from services.scan_service import ScanService
@@ -97,7 +98,7 @@ def render_run_summary(run: dict):
     cols[1].metric("탐지 건수", int(run.get("findings_count") or 0))
     cols[2].metric("입력 유형", input_type_label(run.get("input_type") or ""))
     cols[3].metric("정책", run.get("policy_name") or "정책 미지정")
-    st.write(f"**스캔 시각**: {run.get('generated_at') or run.get('scan_started_at') or '-'}")
+    st.write(f"**스캔 시각**: {format_display_datetime(run.get('generated_at') or run.get('scan_started_at'))}")
     st.write(f"**업로드 사용자**: {run.get('uploaded_by') or '-'}")
     st.write(f"**리포트 파일**: {run.get('file_name') or '-'}")
 
@@ -139,7 +140,7 @@ def render_selected_run_banner(run: dict, highlight_recent: bool = False):
         if highlight_recent
         else "현재 이력을 기준으로 아래 상세 정보와 Findings가 표시됩니다."
     )
-    generated_at = run.get("generated_at") or run.get("scan_started_at") or "-"
+    generated_at = format_display_datetime(run.get("generated_at") or run.get("scan_started_at"))
     server_name = run.get("server_name") or "미연결 서버"
     findings_count = int(run.get("findings_count") or 0)
     file_name = run.get("file_name") or "-"
@@ -181,8 +182,9 @@ for key, value in {
 
 servers_df = server_service.list_servers_df(active_only=False)
 policies_df = policy_service.list_policies_df(active_only=False)
+all_runs_source_df = scan_service.list_scan_runs_df(limit=500)
 all_runs_df = format_timestamp_columns(
-    scan_service.list_scan_runs_df(limit=500),
+    all_runs_source_df,
     ["scan_started_at", "generated_at", "uploaded_at", "created_at"],
 )
 
@@ -267,20 +269,26 @@ with tab_history:
         st.checkbox("최신 이력만 보기", key="report_history_latest_only")
     st.checkbox("Findings가 있는 이력만 보기", key="report_history_findings_only")
 
-    filtered = all_runs_df.copy()
-    if st.session_state["report_history_server_filter"]:
-        filtered = filtered[filtered["server_id"] == st.session_state["report_history_server_filter"]]
-    if st.session_state["report_history_policy_filter"]:
-        filtered = filtered[filtered["policy_id"] == st.session_state["report_history_policy_filter"]]
-    if st.session_state["report_history_input_type_filter"]:
-        filtered = filtered[filtered["input_type"] == st.session_state["report_history_input_type_filter"]]
-    if st.session_state["report_history_latest_only"]:
-        filtered = filtered[filtered["latest_for_server"] == True]
-    if st.session_state["report_history_findings_only"]:
-        filtered = filtered[filtered["findings_count"].fillna(0).astype(int) > 0]
-    if st.session_state["report_history_recent_days"] != 0 and not filtered.empty:
+    filtered_source = all_runs_source_df.copy() if all_runs_source_df is not None else pd.DataFrame()
+    if st.session_state["report_history_server_filter"] and not filtered_source.empty:
+        filtered_source = filtered_source[filtered_source["server_id"] == st.session_state["report_history_server_filter"]]
+    if st.session_state["report_history_policy_filter"] and not filtered_source.empty:
+        filtered_source = filtered_source[filtered_source["policy_id"] == st.session_state["report_history_policy_filter"]]
+    if st.session_state["report_history_input_type_filter"] and not filtered_source.empty:
+        filtered_source = filtered_source[filtered_source["input_type"] == st.session_state["report_history_input_type_filter"]]
+    if st.session_state["report_history_latest_only"] and not filtered_source.empty:
+        filtered_source = filtered_source[filtered_source["latest_for_server"] == True]
+    if st.session_state["report_history_findings_only"] and not filtered_source.empty:
+        filtered_source = filtered_source[filtered_source["findings_count"].fillna(0).astype(int) > 0]
+    if st.session_state["report_history_recent_days"] != 0 and not filtered_source.empty:
         cutoff = pd.Timestamp(datetime.now() - timedelta(days=int(st.session_state["report_history_recent_days"])))
-        filtered = filtered[pd.to_datetime(filtered["generated_at"], errors="coerce") >= cutoff]
+        generated_series = pd.to_datetime(filtered_source["generated_at"], errors="coerce", utc=True)
+        filtered_source = filtered_source[generated_series >= cutoff.tz_localize("UTC")]
+
+    filtered = format_timestamp_columns(
+        filtered_source,
+        ["scan_started_at", "generated_at", "uploaded_at", "created_at"],
+    )
 
     st.caption(f"현재 조건에 맞는 실행 이력: {0 if filtered is None else len(filtered)}건")
     st.markdown("### 저장 이력 목록")

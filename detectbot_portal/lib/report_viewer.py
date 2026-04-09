@@ -3,9 +3,10 @@ Report viewer helpers for DetectBot Portal.
 """
 
 from collections import Counter
-from datetime import datetime
 
 import pandas as pd
+
+from lib.time_utils import format_display_datetime
 
 
 def normalize_list(value):
@@ -19,10 +20,8 @@ def normalize_list(value):
 def fmt_dt(value):
     if not value:
         return "-"
-    try:
-        return datetime.fromisoformat(str(value)).strftime("%Y-%m-%d %H:%M:%S")
-    except Exception:
-        return str(value)
+    formatted = format_display_datetime(value)
+    return str(value) if formatted == "-" else formatted
 
 
 def fmt_bytes(num):

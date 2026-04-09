@@ -8,6 +8,8 @@ import json
 import pandas as pd
 import streamlit as st
 
+from lib.time_utils import format_display_datetime
+
 
 CRITICALITY_LABELS = {
     "critical": "Critical",
@@ -265,8 +267,8 @@ def format_timestamp_columns(df: pd.DataFrame, columns):
     formatted = df.copy()
     for column in columns:
         if column in formatted.columns:
-            formatted[column] = (
-                formatted[column].fillna("").astype(str).str.replace("T", " ", regex=False)
+            formatted[column] = formatted[column].apply(
+                lambda value: "" if value in (None, "") else format_display_datetime(value)
             )
     return formatted
 
@@ -443,7 +445,11 @@ def build_server_inventory_display_df(df: pd.DataFrame):
     display["서비스"] = display["service_name"].fillna("")
     display["담당"] = display["owner_name"].fillna("")
     if "updated_at" in display.columns:
-        display["최근 수정"] = display["updated_at"].astype(str).str.replace("T", " ", regex=False)
+        display["최근 수정"] = display["updated_at"].apply(
+            lambda value: "" if value in (None, "") else format_display_datetime(value)
+        )
+    else:
+        display["최근 수정"] = ""
     return display[
         [
             "서버명",
@@ -478,7 +484,9 @@ def build_scan_run_display_df(df: pd.DataFrame):
     display["탐지 건수"] = display["findings_count"].fillna(0).astype(int)
     display["점검 루트"] = display["roots_count"].fillna(0).astype(int)
     display["스캔 파일"] = display["scanned_files"].fillna(0).astype(int)
-    display["실행 시각"] = display["generated_at"].fillna(display["scan_started_at"]).fillna("")
+    display["실행 시각"] = display["generated_at"].fillna(display["scan_started_at"]).apply(
+        lambda value: "" if value in (None, "") else format_display_datetime(value)
+    )
     display["리포트 파일"] = display["file_name"].fillna("")
     return display[
         [
@@ -541,9 +549,9 @@ def render_server_overview(server):
     with info_col1:
         st.write(f"**OS Detail**: {host_os_label(server.get('os_type'), server.get('os_name'), server.get('platform'))}")
         st.write(f"**담당자 / 부서**: {server.get('owner_name') or '-'}")
-        st.write(f"**생성 시각**: {server.get('created_at') or '-'}")
+        st.write(f"**Created At**: {format_display_datetime(server.get('created_at'))}")
     with info_col2:
-        st.write(f"**수정 시각**: {server.get('updated_at') or '-'}")
+        st.write(f"**Updated At**: {format_display_datetime(server.get('updated_at'))}")
         st.write(f"**비고**: {server.get('notes') or '-'}")
 
 
@@ -572,7 +580,7 @@ def render_run_selection_cards(df: pd.DataFrame, selected_run_id, key_prefix="ru
                     {findings_count_pill(row.get("findings_count"))}
                     {input_type_pill(row.get("input_type"))}
                     <div class="service">{html.escape(row.get("policy_name") or "정책 미지정")}</div>
-                    <div class="hint">{html.escape(row.get("generated_at") or row.get("scan_started_at") or "-")} / 루트 {int(row.get("roots_count") or 0)}개 / 스캔 파일 {int(row.get("scanned_files") or 0)}개</div>
+                    <div class="hint">{html.escape(format_display_datetime(row.get("generated_at") or row.get("scan_started_at")))} / 루트 {int(row.get("roots_count") or 0)}개 / 스캔 파일 {int(row.get("scanned_files") or 0)}개</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -599,7 +607,7 @@ def render_scan_run_overview(run):
 
     info_col1, info_col2 = st.columns(2)
     with info_col1:
-        st.write(f"**실행 시각**: {run.get('scan_started_at') or run.get('generated_at') or '-'}")
+        st.write(f"**Run Time**: {format_display_datetime(run.get('scan_started_at') or run.get('generated_at'))}")
         st.write(
             f"**Host**: {host_identity_text(run.get('host_hostname') or run.get('hostname'), run.get('host_primary_ip') or run.get('ip_address'), run.get('host_os_type') or run.get('os_type'))}"
         )

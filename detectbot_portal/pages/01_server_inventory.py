@@ -6,8 +6,8 @@ from config.settings import load_settings
 from lib.navigation import render_portal_sidebar
 from lib.models import CRITICALITIES, ENVIRONMENTS, OS_TYPES, WEB_SERVER_TYPES, ZONES
 from lib.ui import (
-    build_scan_run_display_df,
-    build_server_inventory_display_df,
+    build_scan_run_display_df as _build_scan_run_display_df,
+    build_server_inventory_display_df as _build_server_inventory_display_df,
     format_timestamp_columns,
     inject_portal_css,
     render_portal_header,
@@ -85,6 +85,45 @@ def sync_selected_server_from_table(selection, servers_df: pd.DataFrame):
     if next_selected_id != current_selected_id:
         st.session_state["inventory_selected_server_id"] = next_selected_id
         st.rerun()
+
+
+def build_server_inventory_display_df(df: pd.DataFrame):
+    display = _build_server_inventory_display_df(df)
+    if display is None or display.empty:
+        return display
+
+    return display.rename(
+        columns={
+            "Server Name": "서버명",
+            "Environment": "운영구분",
+            "Criticality": "중요도",
+            "Status": "상태",
+            "Upload": "업로드",
+            "Service": "서비스",
+            "Owner": "담당",
+            "Last Updated": "최근 수정",
+        }
+    )
+
+
+def build_scan_run_display_df(df: pd.DataFrame):
+    display = _build_scan_run_display_df(df)
+    if display is None or display.empty:
+        return display
+
+    return display.rename(
+        columns={
+            "Latest": "최신",
+            "Server Name": "서버명",
+            "Input Type": "입력 유형",
+            "Policy": "정책",
+            "Findings": "탐지 건수",
+            "Roots": "점검 루트",
+            "Scanned Files": "스캔 파일",
+            "Run Time": "실행 시각",
+            "Report File": "리포트 파일",
+        }
+    )
 
 
 render_portal_header(
