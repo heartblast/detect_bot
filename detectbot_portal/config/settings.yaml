@@ -1,7 +1,7 @@
 database:
   backend: sqlite
   sqlite:
-    path: detectbot_portal/data/detectbot_portal.sqlite3
+    path: data/detectbot_portal.sqlite3
     busy_timeout_ms: 5000
   postgresql:
     host: localhost
@@ -13,5 +13,5 @@ database:
     max_overflow: 10
     password_enc: gAAAAABp0wnklLp_mXipRi0j0OE2CyeqX8wuA3xQJ6Lm3sOerqPNUNPWzpyneW0OgxsUt4vQEFy8cBaSXeh_wuu0tLtnOg3SGw==
 app:
-  reports_dir: detectbot_portal/data/reports
+  reports_dir: data/reports
   auto_seed_demo_data: true

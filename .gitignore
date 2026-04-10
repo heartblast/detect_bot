@@ -1,1 +1,16 @@
 dist/*
+
+# Local portal databases and generated report artifacts
+detectbot_portal/data/
+detectbot_portal/data/detectbot_portal.sqlite3
+
+# Demo/sample datasets used only for local seeding
+detectbot_portal/samples/demo_seed_dataset.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local scratch directories
+.tmp_seed_test/
+.tmp_seed_test2/
